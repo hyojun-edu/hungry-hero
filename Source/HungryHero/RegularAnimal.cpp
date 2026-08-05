@@ -23,7 +23,7 @@ ARegularAnimal::ARegularAnimal()
 	CollisionComponent->SetCollisionObjectType(ECC_Pawn);
 	CollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-	CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 	CollisionComponent->SetGenerateOverlapEvents(true);
 
 	PrototypeBodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeBodyMesh"));
@@ -53,7 +53,6 @@ void ARegularAnimal::BeginPlay()
 	Super::BeginPlay();
 
 	CacheTargetPlayer();
-	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ARegularAnimal::HandleOverlap);
 }
 
 void ARegularAnimal::Tick(float DeltaTime)
@@ -149,7 +148,8 @@ void ARegularAnimal::UpdateDashPreparation(float DeltaTime)
 
 void ARegularAnimal::UpdateDash(float DeltaTime)
 {
-	MoveInDirection(DashDirection, DashSpeed, DeltaTime);
+	const FHitResult HitResult = MoveInDirection(DashDirection, DashSpeed, DeltaTime);
+	HandleDashBlockedHit(HitResult);
 
 	if (StateElapsedTime >= DashDuration)
 	{
@@ -210,15 +210,16 @@ void ARegularAnimal::FaceDirection(const FVector& Direction)
 	SetActorRotation(FRotator(0.0f, Direction.Rotation().Yaw, 0.0f));
 }
 
-void ARegularAnimal::MoveInDirection(const FVector& Direction, float Speed, float DeltaTime)
+FHitResult ARegularAnimal::MoveInDirection(const FVector& Direction, float Speed, float DeltaTime)
 {
+	FHitResult HitResult;
 	if (Direction.IsNearlyZero())
 	{
-		return;
+		return HitResult;
 	}
 
-	FHitResult HitResult;
 	AddActorWorldOffset(Direction * Speed * DeltaTime, true, &HitResult);
+	return HitResult;
 }
 
 void ARegularAnimal::ResolveAnimalSeparation(float DeltaTime)
@@ -281,20 +282,15 @@ bool ARegularAnimal::IsTargetPlayerGameOver() const
 	return HealthComponent && HealthComponent->IsGameOver();
 }
 
-void ARegularAnimal::HandleOverlap(
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult)
+void ARegularAnimal::HandleDashBlockedHit(const FHitResult& HitResult)
 {
-	if (CurrentState != ERegularAnimalState::Dashing || bDamagedPlayerThisDash || !OtherActor || IsTargetPlayerGameOver())
+	AActor* HitActor = HitResult.GetActor();
+	if (!HitResult.bBlockingHit || CurrentState != ERegularAnimalState::Dashing || bDamagedPlayerThisDash || !HitActor || IsTargetPlayerGameOver())
 	{
 		return;
 	}
 
-	if (UHungryHeroHealthComponent* HealthComponent = OtherActor->FindComponentByClass<UHungryHeroHealthComponent>())
+	if (UHungryHeroHealthComponent* HealthComponent = HitActor->FindComponentByClass<UHungryHeroHealthComponent>())
 	{
 		if (HealthComponent->IsGameOver())
 		{

@@ -8,7 +8,6 @@
 
 class USphereComponent;
 class UStaticMeshComponent;
-class UPrimitiveComponent;
 class URegularAnimalCombatComponent;
 class APawn;
 
@@ -124,8 +123,8 @@ private:
 	// 주어진 방향을 바라보게 회전한다.
 	void FaceDirection(const FVector& Direction);
 
-	// 이동을 처리하고 바닥 기준 높이를 유지한다.
-	void MoveInDirection(const FVector& Direction, float Speed, float DeltaTime);
+	// 이동을 처리하고 막힌 대상을 확인할 수 있도록 충돌 결과를 돌려준다.
+	FHitResult MoveInDirection(const FVector& Direction, float Speed, float DeltaTime);
 
 	// 주변 일반 동물과 겹쳐 보이지 않도록 짧게 밀어낸다.
 	void ResolveAnimalSeparation(float DeltaTime);
@@ -136,13 +135,6 @@ private:
 	// 목표 플레이어가 게임오버 상태인지 확인한다.
 	bool IsTargetPlayerGameOver() const;
 
-	// 돌진 중 충돌한 플레이어에게 체력 피해를 준다.
-	UFUNCTION()
-	void HandleOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult);
+	// 돌진 이동 중 막힌 대상이 플레이어면 체력 피해를 준다.
+	void HandleDashBlockedHit(const FHitResult& HitResult);
 };
