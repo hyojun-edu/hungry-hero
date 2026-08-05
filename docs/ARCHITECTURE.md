@@ -26,6 +26,8 @@
   - `TASK_BREAKDOWN.md`: GDD 기준 구현 task 분해 문서
 - `Source/HungryHero/`: HungryHero 게임 C++ 모듈
   - `HungryHeroPlayerCharacter`: Blueprint 외형 조정을 전제로 한 플레이어 Character
+  - `HungryHeroHealthComponent`: 플레이어 체력 감소와 게임오버 상태를 담당하는 컴포넌트
+  - `HungryHeroHealthHud`: 체력바와 게임오버 문구를 그리는 Canvas 기반 HUD
   - `HungryHeroKnifeAttackComponent`: 플레이어 단발 칼 공격 입력의 시각 확인용 컴포넌트
   - `PrototypeRoom`: 사각형 프로토타입 방 Actor와 확인용 기본 방향성 조명
   - `FixedRoomCamera`: 방 확인용 고정 카메라 Actor

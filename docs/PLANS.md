@@ -13,6 +13,7 @@
 | 01-3 | [Tasks/01-3_mouse_facing_and_spacebar_attack.md](../Tasks/01-3_mouse_facing_and_spacebar_attack.md) | 마우스 기준 플레이어 회전과 칼 공격 입력 정리 | 완료 |
 | 01-4 | [Tasks/01-4_movement_facing_priority.md](../Tasks/01-4_movement_facing_priority.md) | 마우스 이동 방향 회전 유지 | 완료 |
 | 01-5 | [Tasks/01-5_player_blueprint_setup.md](../Tasks/01-5_player_blueprint_setup.md) | 플레이어 Blueprint 관리 준비 | 완료 |
+| 01-6 | [Tasks/01-6_player_health_and_game_over.md](../Tasks/01-6_player_health_and_game_over.md) | 플레이어 체력 감소와 게임오버 | 완료 |
 
 ## 상태 범례
 
@@ -21,6 +22,9 @@
 - `완료`: 구현 및 현재 확인 모드 기준 확인 완료
 
 ## 최근 작업 로그
+- 2026-08-05: 01-6 결과 확인 완료. 사용자 확인에 따라 체력바와 체력 숫자 표시, 체력 감소, 약 30초 후 체력 0, `GAME OVER` 문구, 범위 밖 요소 미생성을 완료 처리하고 단계 상태를 완료로 변경했다.
+- 2026-08-05: 01-6 체력 감소와 게임오버 구현. `HungryHeroHealthComponent`와 `HungryHeroHealthHud`를 추가하고 `HungryHeroPlayerCharacter`에 체력 컴포넌트를 연결했다. `BP_HungryHeroGameMode` HUD Class 설정 및 PIE 결과 확인 대기 중.
+- 2026-08-05: 사용자 요청 템플릿을 기준으로 01-6 플레이어 체력 감소와 게임오버 task를 추가했다. 01-5 다음 순서로 적합하고, 적·음식·점수·보스를 제외해 한 단계 범위로 유지했다.
 - 2026-08-05: 01-5 결과 확인 완료. 사용자 확인에 따라 `BP_PlayerCharacter` 생성과 `BP_HungryHeroGameMode` 연결, PIE 이동·마우스 회전·공격 표시, inherited component 확인, 범위 밖 동작 미발생 항목을 완료 처리하고 단계 상태를 완료로 변경했다.
 - 2026-08-05: 01-5 Character 전환 구현. 기존 플레이어 Pawn 클래스를 제거하고 `HungryHeroPlayerCharacter`를 추가했으며, GameMode가 C++에서 기본 플레이어 클래스를 직접 지정하지 않도록 분리했다. `BP_PlayerCharacter`와 `BP_HungryHeroGameMode` 생성 및 맵 설정 수동 확인 대기 중.
 - 2026-08-05: 01-5 범위 조정. 플레이어 Blueprint 관리 준비에 새 `ACharacter` 계열 C++ 클래스 생성을 포함하기로 했다.
