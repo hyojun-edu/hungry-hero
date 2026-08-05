@@ -65,6 +65,12 @@ void ARegularAnimal::Tick(float DeltaTime)
 		CacheTargetPlayer();
 	}
 
+	if (IsTargetPlayerGameOver())
+	{
+		DashDirectionVisualMesh->SetHiddenInGame(true);
+		return;
+	}
+
 	StateElapsedTime += DeltaTime;
 
 	switch (CurrentState)
@@ -263,6 +269,18 @@ FVector ARegularAnimal::GetFallbackSeparationDirection() const
 	return FVector(FMath::Cos(AngleRadians), FMath::Sin(AngleRadians), 0.0f);
 }
 
+bool ARegularAnimal::IsTargetPlayerGameOver() const
+{
+	const APawn* PlayerPawn = TargetPlayer.Get();
+	if (!PlayerPawn)
+	{
+		return false;
+	}
+
+	const UHungryHeroHealthComponent* HealthComponent = PlayerPawn->FindComponentByClass<UHungryHeroHealthComponent>();
+	return HealthComponent && HealthComponent->IsGameOver();
+}
+
 void ARegularAnimal::HandleOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
@@ -271,13 +289,18 @@ void ARegularAnimal::HandleOverlap(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (CurrentState != ERegularAnimalState::Dashing || bDamagedPlayerThisDash || !OtherActor)
+	if (CurrentState != ERegularAnimalState::Dashing || bDamagedPlayerThisDash || !OtherActor || IsTargetPlayerGameOver())
 	{
 		return;
 	}
 
 	if (UHungryHeroHealthComponent* HealthComponent = OtherActor->FindComponentByClass<UHungryHeroHealthComponent>())
 	{
+		if (HealthComponent->IsGameOver())
+		{
+			return;
+		}
+
 		HealthComponent->ApplyDamage(DashDamage);
 		bDamagedPlayerThisDash = true;
 	}

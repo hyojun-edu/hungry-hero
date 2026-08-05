@@ -133,6 +133,9 @@ private:
 	// 완전히 같은 위치에 겹쳤을 때 쓸 임시 분리 방향을 계산한다.
 	FVector GetFallbackSeparationDirection() const;
 
+	// 목표 플레이어가 게임오버 상태인지 확인한다.
+	bool IsTargetPlayerGameOver() const;
+
 	// 돌진 중 충돌한 플레이어에게 체력 피해를 준다.
 	UFUNCTION()
 	void HandleOverlap(

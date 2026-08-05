@@ -69,4 +69,7 @@ private:
 
 	// 단발 칼 공격 입력을 공격 컴포넌트에 전달한다.
 	void Attack();
+
+	// 체력이 0이 되어 플레이 조작을 막아야 하는지 확인한다.
+	bool IsGameOver() const;
 };

@@ -74,6 +74,11 @@ void AFoodPickup::HandleOverlap(
 		return;
 	}
 
+	if (HealthComponent->IsGameOver())
+	{
+		return;
+	}
+
 	HealthComponent->Heal(HealAmount);
 	ScoreComponent->AddFoodScore();
 	Destroy();

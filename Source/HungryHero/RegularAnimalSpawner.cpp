@@ -4,6 +4,9 @@
 
 #include "Engine/World.h"
 #include "EngineUtils.h"
+#include "GameFramework/Pawn.h"
+#include "HungryHeroHealthComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "RegularAnimal.h"
 #include "TimerManager.h"
 
@@ -35,7 +38,7 @@ void ARegularAnimalSpawner::SpawnRegularAnimal()
 {
 	RemoveInvalidAnimals();
 
-	if (!RegularAnimalClass || SpawnedAnimals.Num() >= MaxLiveAnimals)
+	if (IsPlayerGameOver() || !RegularAnimalClass || SpawnedAnimals.Num() >= MaxLiveAnimals)
 	{
 		return;
 	}
@@ -107,6 +110,18 @@ bool ARegularAnimalSpawner::IsSpawnLocationSeparated(const FVector& CandidateLoc
 	}
 
 	return true;
+}
+
+bool ARegularAnimalSpawner::IsPlayerGameOver() const
+{
+	const APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (!PlayerPawn)
+	{
+		return false;
+	}
+
+	const UHungryHeroHealthComponent* HealthComponent = PlayerPawn->FindComponentByClass<UHungryHeroHealthComponent>();
+	return HealthComponent && HealthComponent->IsGameOver();
 }
 
 void ARegularAnimalSpawner::RemoveInvalidAnimals()

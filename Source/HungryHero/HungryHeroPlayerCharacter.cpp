@@ -45,6 +45,15 @@ void AHungryHeroPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (IsGameOver())
+	{
+		GetCharacterMovement()->StopMovementImmediately();
+		bHasMouseFacingInputThisFrame = false;
+		MouseFacingForwardValue = 0.0f;
+		MouseFacingRightValue = 0.0f;
+		return;
+	}
+
 	UpdateFacingFromMouseInput(DeltaTime);
 	bHasMouseFacingInputThisFrame = false;
 	MouseFacingForwardValue = 0.0f;
@@ -64,16 +73,31 @@ void AHungryHeroPlayerCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 void AHungryHeroPlayerCharacter::MoveForward(float Value)
 {
+	if (IsGameOver())
+	{
+		return;
+	}
+
 	AddMovementInput(FVector::ForwardVector, Value);
 }
 
 void AHungryHeroPlayerCharacter::MoveRight(float Value)
 {
+	if (IsGameOver())
+	{
+		return;
+	}
+
 	AddMovementInput(FVector::RightVector, Value);
 }
 
 void AHungryHeroPlayerCharacter::SetMouseFacingForward(float Value)
 {
+	if (IsGameOver())
+	{
+		return;
+	}
+
 	if (FMath::IsNearlyZero(Value))
 	{
 		return;
@@ -85,6 +109,11 @@ void AHungryHeroPlayerCharacter::SetMouseFacingForward(float Value)
 
 void AHungryHeroPlayerCharacter::SetMouseFacingRight(float Value)
 {
+	if (IsGameOver())
+	{
+		return;
+	}
+
 	if (FMath::IsNearlyZero(Value))
 	{
 		return;
@@ -125,8 +154,13 @@ void AHungryHeroPlayerCharacter::RotateTowardInputDirection(const FVector& Input
 
 void AHungryHeroPlayerCharacter::Attack()
 {
-	if (KnifeAttackComponent)
+	if (!IsGameOver() && KnifeAttackComponent)
 	{
 		KnifeAttackComponent->StartAttack();
 	}
+}
+
+bool AHungryHeroPlayerCharacter::IsGameOver() const
+{
+	return HealthComponent && HealthComponent->IsGameOver();
 }

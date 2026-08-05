@@ -66,4 +66,7 @@ private:
 
 	// 후보 위치가 기존 일반 동물과 충분히 떨어져 있는지 확인한다.
 	bool IsSpawnLocationSeparated(const FVector& CandidateLocation) const;
+
+	// 플레이어가 게임오버 상태라 새 스폰을 막아야 하는지 확인한다.
+	bool IsPlayerGameOver() const;
 };
