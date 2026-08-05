@@ -3,6 +3,7 @@
 #include "RegularAnimalSpawner.h"
 
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "RegularAnimal.h"
 #include "TimerManager.h"
 
@@ -45,7 +46,25 @@ void ARegularAnimalSpawner::SpawnRegularAnimal()
 		return;
 	}
 
-	const FVector SpawnLocation = GetRandomEdgeSpawnLocation();
+	FVector SpawnLocation = FVector::ZeroVector;
+	bool bFoundSeparatedSpawnLocation = false;
+	const int32 SpawnAttempts = FMath::Max(1, MaxSpawnLocationAttempts);
+	for (int32 AttemptIndex = 0; AttemptIndex < SpawnAttempts; ++AttemptIndex)
+	{
+		const FVector CandidateLocation = GetRandomEdgeSpawnLocation();
+		if (IsSpawnLocationSeparated(CandidateLocation))
+		{
+			SpawnLocation = CandidateLocation;
+			bFoundSeparatedSpawnLocation = true;
+			break;
+		}
+	}
+
+	if (!bFoundSeparatedSpawnLocation)
+	{
+		return;
+	}
+
 	const FRotator SpawnRotation = FRotator::ZeroRotator;
 
 	FActorSpawnParameters SpawnParameters;
@@ -62,6 +81,32 @@ void ARegularAnimalSpawner::SpawnRegularAnimal()
 		SpawnedAnimal->SetLifeSpan(SpawnedAnimalLifeSpan);
 		SpawnedAnimals.Add(SpawnedAnimal);
 	}
+}
+
+bool ARegularAnimalSpawner::IsSpawnLocationSeparated(const FVector& CandidateLocation) const
+{
+	UWorld* World = GetWorld();
+	if (!World || MinAnimalSpawnDistance <= 0.0f)
+	{
+		return true;
+	}
+
+	const float MinDistanceSquared = FMath::Square(MinAnimalSpawnDistance);
+	for (TActorIterator<ARegularAnimal> AnimalIterator(World); AnimalIterator; ++AnimalIterator)
+	{
+		const ARegularAnimal* ExistingAnimal = *AnimalIterator;
+		if (!IsValid(ExistingAnimal))
+		{
+			continue;
+		}
+
+		if (FVector::DistSquared2D(CandidateLocation, ExistingAnimal->GetActorLocation()) < MinDistanceSquared)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void ARegularAnimalSpawner::RemoveInvalidAnimals()

@@ -63,6 +63,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
 	float RecoverTime = 0.55f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
+	float SeparationRadius = 95.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
+	float SeparationPushSpeed = 380.0f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Combat")
 	float DashDamage = 10.0f;
 
@@ -103,6 +109,12 @@ private:
 
 	// 이동을 처리하고 바닥 기준 높이를 유지한다.
 	void MoveInDirection(const FVector& Direction, float Speed, float DeltaTime);
+
+	// 주변 일반 동물과 겹쳐 보이지 않도록 짧게 밀어낸다.
+	void ResolveAnimalSeparation(float DeltaTime);
+
+	// 완전히 같은 위치에 겹쳤을 때 쓸 임시 분리 방향을 계산한다.
+	FVector GetFallbackSeparationDirection() const;
 
 	// 돌진 중 충돌한 플레이어에게 체력 피해를 준다.
 	UFUNCTION()

@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "HungryHeroHealthComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -80,6 +81,8 @@ void ARegularAnimal::Tick(float DeltaTime)
 	default:
 		break;
 	}
+
+	ResolveAnimalSeparation(DeltaTime);
 }
 
 void ARegularAnimal::CacheTargetPlayer()
@@ -180,6 +183,54 @@ void ARegularAnimal::MoveInDirection(const FVector& Direction, float Speed, floa
 
 	FHitResult HitResult;
 	AddActorWorldOffset(Direction * Speed * DeltaTime, true, &HitResult);
+}
+
+void ARegularAnimal::ResolveAnimalSeparation(float DeltaTime)
+{
+	UWorld* World = GetWorld();
+	if (!World || SeparationRadius <= 0.0f || SeparationPushSpeed <= 0.0f)
+	{
+		return;
+	}
+
+	const float SeparationRadiusSquared = FMath::Square(SeparationRadius);
+
+	for (TActorIterator<ARegularAnimal> AnimalIterator(World); AnimalIterator; ++AnimalIterator)
+	{
+		ARegularAnimal* OtherAnimal = *AnimalIterator;
+		if (!IsValid(OtherAnimal) || OtherAnimal == this)
+		{
+			continue;
+		}
+
+		FVector OffsetFromOther = GetActorLocation() - OtherAnimal->GetActorLocation();
+		OffsetFromOther.Z = 0.0f;
+
+		const float DistanceSquared = OffsetFromOther.SizeSquared();
+		if (DistanceSquared >= SeparationRadiusSquared)
+		{
+			continue;
+		}
+
+		FVector PushDirection = OffsetFromOther.GetSafeNormal();
+		if (PushDirection.IsNearlyZero())
+		{
+			PushDirection = GetFallbackSeparationDirection();
+		}
+
+		const float Distance = FMath::Sqrt(DistanceSquared);
+		const float NeededPushDistance = SeparationRadius - Distance;
+		const float PushDistance = FMath::Min(NeededPushDistance, SeparationPushSpeed * DeltaTime);
+
+		FHitResult HitResult;
+		AddActorWorldOffset(PushDirection * PushDistance, true, &HitResult);
+	}
+}
+
+FVector ARegularAnimal::GetFallbackSeparationDirection() const
+{
+	const float AngleRadians = static_cast<float>(GetUniqueID() % 360) * UE_PI / 180.0f;
+	return FVector(FMath::Cos(AngleRadians), FMath::Sin(AngleRadians), 0.0f);
 }
 
 void ARegularAnimal::HandleOverlap(

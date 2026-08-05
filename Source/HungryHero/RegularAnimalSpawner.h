@@ -43,6 +43,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner")
 	float SpawnHeight = 40.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner")
+	float MinAnimalSpawnDistance = 120.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner")
+	int32 MaxSpawnLocationAttempts = 12;
+
 private:
 	FTimerHandle SpawnTimerHandle;
 
@@ -57,4 +63,7 @@ private:
 
 	// 방 네 변 중 한 곳의 가장자리 근처 위치를 고른다.
 	FVector GetRandomEdgeSpawnLocation() const;
+
+	// 후보 위치가 기존 일반 동물과 충분히 떨어져 있는지 확인한다.
+	bool IsSpawnLocationSeparated(const FVector& CandidateLocation) const;
 };
