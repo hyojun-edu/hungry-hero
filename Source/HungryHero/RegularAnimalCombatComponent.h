@@ -26,7 +26,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Combat")
-	int32 MaxKnifeHits = 3;
+	int32 MaxKnifeHits = 2;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Combat")
 	float HitReactionVisibleTime = 0.12f;

@@ -4,6 +4,7 @@
 
 #include "HungryHeroHealthComponent.h"
 #include "HungryHeroKnifeAttackComponent.h"
+#include "HungryHeroScoreComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -37,6 +38,7 @@ AHungryHeroPlayerCharacter::AHungryHeroPlayerCharacter()
 
 	KnifeAttackComponent = CreateDefaultSubobject<UHungryHeroKnifeAttackComponent>(TEXT("KnifeAttackComponent"));
 	HealthComponent = CreateDefaultSubobject<UHungryHeroHealthComponent>(TEXT("HealthComponent"));
+	ScoreComponent = CreateDefaultSubobject<UHungryHeroScoreComponent>(TEXT("ScoreComponent"));
 }
 
 void AHungryHeroPlayerCharacter::Tick(float DeltaTime)

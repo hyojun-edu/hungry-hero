@@ -35,6 +35,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void ApplyDamage(float DamageAmount);
 
+	// 음식 획득 등으로 체력을 회복시킨다.
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void Heal(float HealAmount);
+
 protected:
 	// 시작 시 체력을 최대 체력으로 맞춘다.
 	virtual void BeginPlay() override;

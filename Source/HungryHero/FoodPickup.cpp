@@ -6,6 +6,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/StaticMesh.h"
+#include "HungryHeroHealthComponent.h"
+#include "HungryHeroScoreComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 AFoodPickup::AFoodPickup()
@@ -19,6 +21,8 @@ AFoodPickup::AFoodPickup()
 	CollisionComponent->SetCollisionObjectType(ECC_WorldDynamic);
 	CollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	CollisionComponent->SetGenerateOverlapEvents(true);
 
 	PrototypeFoodMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeFoodMesh"));
 	PrototypeFoodMesh->SetupAttachment(CollisionComponent);
@@ -41,4 +45,36 @@ AFoodPickup::AFoodPickup()
 	{
 		PrototypeFoodMesh->SetStaticMesh(SphereMesh.Object);
 	}
+}
+
+void AFoodPickup::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AFoodPickup::HandleOverlap);
+}
+
+void AFoodPickup::HandleOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (!OtherActor || OtherActor == this)
+	{
+		return;
+	}
+
+	UHungryHeroHealthComponent* HealthComponent = OtherActor->FindComponentByClass<UHungryHeroHealthComponent>();
+	UHungryHeroScoreComponent* ScoreComponent = OtherActor->FindComponentByClass<UHungryHeroScoreComponent>();
+	if (!HealthComponent || !ScoreComponent)
+	{
+		return;
+	}
+
+	HealthComponent->Heal(HealAmount);
+	ScoreComponent->AddFoodScore();
+	Destroy();
 }

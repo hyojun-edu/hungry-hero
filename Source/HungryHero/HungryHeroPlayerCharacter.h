@@ -8,6 +8,7 @@
 
 class UHungryHeroKnifeAttackComponent;
 class UHungryHeroHealthComponent;
+class UHungryHeroScoreComponent;
 class UStaticMeshComponent;
 
 UCLASS(Blueprintable)
@@ -34,6 +35,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player|Health")
 	TObjectPtr<UHungryHeroHealthComponent> HealthComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player|Score")
+	TObjectPtr<UHungryHeroScoreComponent> ScoreComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	float MouseFacingTurnSpeed = 18.0f;

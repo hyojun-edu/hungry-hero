@@ -7,6 +7,7 @@
 #include "HungryHeroHealthHud.generated.h"
 
 class UHungryHeroHealthComponent;
+class UHungryHeroScoreComponent;
 
 UCLASS()
 class HUNGRYHERO_API AHungryHeroHealthHud : public AHUD
@@ -21,8 +22,14 @@ private:
 	// 현재 플레이어의 체력 컴포넌트를 찾는다.
 	UHungryHeroHealthComponent* FindPlayerHealthComponent() const;
 
+	// 현재 플레이어의 점수 컴포넌트를 찾는다.
+	UHungryHeroScoreComponent* FindPlayerScoreComponent() const;
+
 	// 체력바 배경과 현재 체력 비율을 그린다.
 	void DrawHealthBar(const UHungryHeroHealthComponent* HealthComponent);
+
+	// 현재 점수를 화면에 그린다.
+	void DrawScoreText(const UHungryHeroScoreComponent* ScoreComponent);
 
 	// 게임오버 상태일 때 화면 중앙 문구를 그린다.
 	void DrawGameOverText();

@@ -20,6 +20,9 @@ public:
 	AFoodPickup();
 
 protected:
+	// 음식 획득 충돌 처리를 준비한다.
+	virtual void BeginPlay() override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Food|Prototype")
 	TObjectPtr<USphereComponent> CollisionComponent;
 
@@ -28,4 +31,18 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Food|Prototype")
 	TObjectPtr<UTextRenderComponent> FoodLabelText;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Food|Pickup")
+	float HealAmount = 20.0f;
+
+private:
+	// 플레이어가 음식에 닿으면 체력 회복과 점수 증가를 처리한다.
+	UFUNCTION()
+	void HandleOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
 };

@@ -27,6 +27,7 @@
 - `Source/HungryHero/`: HungryHero 게임 C++ 모듈
   - `HungryHeroPlayerCharacter`: Blueprint 외형 조정을 전제로 한 플레이어 Character
   - `HungryHeroHealthComponent`: 플레이어 체력 감소와 게임오버 상태를 담당하는 컴포넌트
+  - `HungryHeroScoreComponent`: 플레이어 현재 점수와 음식 획득 점수 증가를 담당하는 컴포넌트
   - `HungryHeroHealthHud`: 체력바와 게임오버 문구를 그리는 Canvas 기반 HUD
   - `HungryHeroKnifeAttackComponent`: 플레이어 단발 칼 공격 입력의 시각 확인용 컴포넌트
   - `RegularAnimal`: 일반 동물의 접근, 돌진 예고, 돌진 충돌 데미지를 담당하는 프로토타입 Actor

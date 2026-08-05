@@ -52,6 +52,21 @@ void UHungryHeroHealthComponent::ApplyDamage(float DamageAmount)
 	ReduceHealth(DamageAmount);
 }
 
+void UHungryHeroHealthComponent::Heal(float HealAmount)
+{
+	if (bIsGameOver)
+	{
+		return;
+	}
+
+	if (HealAmount <= 0.0f || MaxHealth <= 0.0f)
+	{
+		return;
+	}
+
+	CurrentHealth = FMath::Clamp(CurrentHealth + HealAmount, 0.0f, MaxHealth);
+}
+
 void UHungryHeroHealthComponent::DrainHealth(float DeltaTime)
 {
 	ReduceHealth(HealthDrainPerSecond * DeltaTime);
