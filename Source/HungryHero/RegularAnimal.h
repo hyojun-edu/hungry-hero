@@ -9,6 +9,7 @@
 class USphereComponent;
 class UStaticMeshComponent;
 class UPrimitiveComponent;
+class URegularAnimalCombatComponent;
 class APawn;
 
 UENUM()
@@ -32,6 +33,9 @@ public:
 	// 현재 상태에 맞춰 플레이어 추적, 돌진 예고, 돌진을 갱신한다.
 	virtual void Tick(float DeltaTime) override;
 
+	// 칼 공격에 맞았을 때 일반 동물 전투 컴포넌트로 피격 처리를 전달한다.
+	void ApplyKnifeHit();
+
 protected:
 	// 플레이어를 찾고 돌진 충돌 이벤트를 연결한다.
 	virtual void BeginPlay() override;
@@ -44,6 +48,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animal|Prototype")
 	TObjectPtr<UStaticMeshComponent> DashDirectionVisualMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animal|Combat")
+	TObjectPtr<URegularAnimalCombatComponent> CombatComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
 	float ApproachSpeed = 220.0f;

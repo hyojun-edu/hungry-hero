@@ -9,6 +9,7 @@
 #include "EngineUtils.h"
 #include "HungryHeroHealthComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "RegularAnimalCombatComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 ARegularAnimal::ARegularAnimal()
@@ -43,6 +44,8 @@ ARegularAnimal::ARegularAnimal()
 		PrototypeBodyMesh->SetStaticMesh(CubeMesh.Object);
 		DashDirectionVisualMesh->SetStaticMesh(CubeMesh.Object);
 	}
+
+	CombatComponent = CreateDefaultSubobject<URegularAnimalCombatComponent>(TEXT("CombatComponent"));
 }
 
 void ARegularAnimal::BeginPlay()
@@ -83,6 +86,14 @@ void ARegularAnimal::Tick(float DeltaTime)
 	}
 
 	ResolveAnimalSeparation(DeltaTime);
+}
+
+void ARegularAnimal::ApplyKnifeHit()
+{
+	if (CombatComponent)
+	{
+		CombatComponent->ApplyKnifeHit();
+	}
 }
 
 void ARegularAnimal::CacheTargetPlayer()

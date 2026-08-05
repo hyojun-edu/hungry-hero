@@ -17,6 +17,14 @@ void UHungryHeroKnifeAttackComponent::StartAttack()
 {
 	const TArray<ARegularAnimal*> AttackCandidates = FindAttackCandidates();
 	DrawAttackConeDebug(AttackCandidates);
+
+	for (ARegularAnimal* AttackCandidate : AttackCandidates)
+	{
+		if (IsValid(AttackCandidate))
+		{
+			AttackCandidate->ApplyKnifeHit();
+		}
+	}
 }
 
 TArray<ARegularAnimal*> UHungryHeroKnifeAttackComponent::FindAttackCandidates() const
