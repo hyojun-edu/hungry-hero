@@ -3,42 +3,38 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
-#include "HungryHeroPlayerPawn.generated.h"
+#include "GameFramework/Character.h"
+#include "HungryHeroPlayerCharacter.generated.h"
 
-class UFloatingPawnMovement;
 class UHungryHeroKnifeAttackComponent;
 class UStaticMeshComponent;
 
-UCLASS()
-class HUNGRYHERO_API AHungryHeroPlayerPawn : public APawn
+UCLASS(Blueprintable)
+class HUNGRYHERO_API AHungryHeroPlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	// 큐브 기반 플레이어 Pawn의 기본 컴포넌트와 이동 설정을 만든다.
-	AHungryHeroPlayerPawn();
+	// Blueprint에서 외형을 조정할 수 있는 플레이어 Character 기본 구조를 만든다.
+	AHungryHeroPlayerCharacter();
 
 	// 마우스 이동 입력에 따라 바라보는 방향을 갱신한다.
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	// 플레이어 이동 입력 축을 Pawn 이동 함수에 연결한다.
+	// 플레이어 이동 입력 축을 Character 이동 함수에 연결한다.
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
-private:
-	UPROPERTY(VisibleAnywhere, Category = "Player")
-	TObjectPtr<UStaticMeshComponent> BodyMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player|Prototype")
+	TObjectPtr<UStaticMeshComponent> PrototypeBodyMesh;
 
-	UPROPERTY(VisibleAnywhere, Category = "Player")
-	TObjectPtr<UFloatingPawnMovement> MovementComponent;
-
-	UPROPERTY(VisibleAnywhere, Category = "Player")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player|Attack")
 	TObjectPtr<UHungryHeroKnifeAttackComponent> KnifeAttackComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	float MouseFacingTurnSpeed = 18.0f;
 
+private:
 	float MouseFacingForwardValue = 0.0f;
 
 	float MouseFacingRightValue = 0.0f;

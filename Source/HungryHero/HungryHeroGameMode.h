@@ -12,6 +12,6 @@ class HUNGRYHERO_API AHungryHeroGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	// HungryHero의 기본 플레이어 Pawn 클래스를 지정한다.
+	// HungryHero의 기본 게임 규칙을 준비한다.
 	AHungryHeroGameMode();
 };

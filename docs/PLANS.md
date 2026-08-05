@@ -12,6 +12,7 @@
 | 01-2 | [Tasks/01-2_player_movement_and_knife_attack.md](../Tasks/01-2_player_movement_and_knife_attack.md) | 플레이어 이동과 단발 칼 공격 입력 확인 | 완료 |
 | 01-3 | [Tasks/01-3_mouse_facing_and_spacebar_attack.md](../Tasks/01-3_mouse_facing_and_spacebar_attack.md) | 마우스 기준 플레이어 회전과 칼 공격 입력 정리 | 완료 |
 | 01-4 | [Tasks/01-4_movement_facing_priority.md](../Tasks/01-4_movement_facing_priority.md) | 마우스 이동 방향 회전 유지 | 완료 |
+| 01-5 | [Tasks/01-5_player_blueprint_setup.md](../Tasks/01-5_player_blueprint_setup.md) | 플레이어 Blueprint 관리 준비 | 완료 |
 
 ## 상태 범례
 
@@ -20,6 +21,10 @@
 - `완료`: 구현 및 현재 확인 모드 기준 확인 완료
 
 ## 최근 작업 로그
+- 2026-08-05: 01-5 결과 확인 완료. 사용자 확인에 따라 `BP_PlayerCharacter` 생성과 `BP_HungryHeroGameMode` 연결, PIE 이동·마우스 회전·공격 표시, inherited component 확인, 범위 밖 동작 미발생 항목을 완료 처리하고 단계 상태를 완료로 변경했다.
+- 2026-08-05: 01-5 Character 전환 구현. 기존 플레이어 Pawn 클래스를 제거하고 `HungryHeroPlayerCharacter`를 추가했으며, GameMode가 C++에서 기본 플레이어 클래스를 직접 지정하지 않도록 분리했다. `BP_PlayerCharacter`와 `BP_HungryHeroGameMode` 생성 및 맵 설정 수동 확인 대기 중.
+- 2026-08-05: 01-5 범위 조정. 플레이어 Blueprint 관리 준비에 새 `ACharacter` 계열 C++ 클래스 생성을 포함하기로 했다.
+- 2026-08-05: 사용자 요청 템플릿을 기준으로 01-5 플레이어 Blueprint 관리 준비 task를 추가했다. 01-4 다음 순서로 적합하고, 최종 모델·애니메이션·체력·적·음식·점수를 제외해 한 단계 범위로 유지했다.
 - 2026-08-05: 01-3/01-4 결과 확인 완료. 사용자 확인에 따라 마우스 왼쪽 클릭과 SpaceBar 공격, 이동 중 자동 회전 미발생, 마우스 이동 방향 기준 회전, 범위 밖 동작 미발생 확인 항목을 완료 처리하고 단계 상태를 완료로 변경했다.
 - 2026-08-05: 01-4 이동 방향 자동 회전 제거. 사용자 요청에 따라 이동 입력 방향으로 자동 회전하는 처리를 제외하고, 마우스 이동 방향만 플레이어 정면 방향으로 쓰도록 task와 Pawn 코드를 갱신했다. 수동 컴파일과 PIE 결과 확인 대기 중.
 - 2026-08-05: 01-3/01-4 공격 입력 변경. 사용자 요청에 따라 `KnifeAttack`에 마우스 왼쪽 클릭 매핑을 다시 추가하고, 01-3의 SpaceBar 전용 공격 조건을 SpaceBar 또는 마우스 왼쪽 클릭 공격 조건으로 갱신했다. 수동 컴파일과 PIE 결과 확인 대기 중.

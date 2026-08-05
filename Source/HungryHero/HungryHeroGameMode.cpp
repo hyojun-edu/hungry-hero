@@ -2,9 +2,6 @@
 
 #include "HungryHeroGameMode.h"
 
-#include "HungryHeroPlayerPawn.h"
-
 AHungryHeroGameMode::AHungryHeroGameMode()
 {
-	DefaultPawnClass = AHungryHeroPlayerPawn::StaticClass();
 }

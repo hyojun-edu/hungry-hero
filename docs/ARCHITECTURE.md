@@ -25,11 +25,11 @@
   - `Game_GDD.md`: 최종 게임 기획서
   - `TASK_BREAKDOWN.md`: GDD 기준 구현 task 분해 문서
 - `Source/HungryHero/`: HungryHero 게임 C++ 모듈
-  - `HungryHeroPlayerPawn`: 큐브 기반 플레이어 이동 Pawn
+  - `HungryHeroPlayerCharacter`: Blueprint 외형 조정을 전제로 한 플레이어 Character
   - `HungryHeroKnifeAttackComponent`: 플레이어 단발 칼 공격 입력의 시각 확인용 컴포넌트
   - `PrototypeRoom`: 사각형 프로토타입 방 Actor와 확인용 기본 방향성 조명
   - `FixedRoomCamera`: 방 확인용 고정 카메라 Actor
-  - `HungryHeroGameMode`: 기본 플레이어 Pawn을 지정하는 GameMode
+  - `HungryHeroGameMode`: 플레이어 클래스 지정과 분리된 기본 GameMode
 
 
 ## 권장 파일 배치
