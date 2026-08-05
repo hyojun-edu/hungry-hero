@@ -32,7 +32,7 @@ void URegularAnimalCombatComponent::ApplyKnifeHit(const FVector& HitSourceLocati
 	++CurrentKnifeHits;
 	if (ARegularAnimal* OwnerAnimal = Cast<ARegularAnimal>(GetOwner()))
 	{
-		OwnerAnimal->InterruptDashForKnifeHit();
+		OwnerAnimal->StunForKnifeHit();
 	}
 
 	ShowHitReaction();

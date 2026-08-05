@@ -18,7 +18,8 @@ enum class ERegularAnimalState : uint8
 	Approaching,
 	PreparingDash,
 	Dashing,
-	Recovering
+	Recovering,
+	HitStunned
 };
 
 UCLASS(Blueprintable)
@@ -36,8 +37,8 @@ public:
 	// 칼 공격에 맞았을 때 일반 동물 전투 컴포넌트로 피격 위치를 전달한다.
 	void ApplyKnifeHit(const FVector& HitSourceLocation);
 
-	// 칼 피격으로 돌진 또는 돌진 예고를 중단하고 회복 상태로 전환한다.
-	void InterruptDashForKnifeHit();
+	// 칼 피격 직후 잠깐 행동을 멈추는 상태로 전환한다.
+	void StunForKnifeHit();
 
 protected:
 	// 플레이어를 찾고 돌진 충돌 이벤트를 연결한다.
@@ -73,6 +74,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
 	float RecoverTime = 0.55f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Combat")
+	float HitStunTime = 1.0f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
 	float SeparationRadius = 95.0f;
 
@@ -107,6 +111,9 @@ private:
 
 	// 다음 접근을 시작하기 전 짧게 회복한다.
 	void UpdateRecover(float DeltaTime);
+
+	// 칼 피격 직후 접근과 돌진을 멈춘 채 기다린다.
+	void UpdateHitStun(float DeltaTime);
 
 	// 새 상태로 전환하고 상태 시간을 초기화한다.
 	void ChangeState(ERegularAnimalState NewState);

@@ -81,11 +81,17 @@ void ARegularAnimal::Tick(float DeltaTime)
 	case ERegularAnimalState::Recovering:
 		UpdateRecover(DeltaTime);
 		break;
+	case ERegularAnimalState::HitStunned:
+		UpdateHitStun(DeltaTime);
+		break;
 	default:
 		break;
 	}
 
-	ResolveAnimalSeparation(DeltaTime);
+	if (CurrentState != ERegularAnimalState::HitStunned)
+	{
+		ResolveAnimalSeparation(DeltaTime);
+	}
 }
 
 void ARegularAnimal::ApplyKnifeHit(const FVector& HitSourceLocation)
@@ -96,12 +102,9 @@ void ARegularAnimal::ApplyKnifeHit(const FVector& HitSourceLocation)
 	}
 }
 
-void ARegularAnimal::InterruptDashForKnifeHit()
+void ARegularAnimal::StunForKnifeHit()
 {
-	if (CurrentState == ERegularAnimalState::PreparingDash || CurrentState == ERegularAnimalState::Dashing)
-	{
-		ChangeState(ERegularAnimalState::Recovering);
-	}
+	ChangeState(ERegularAnimalState::HitStunned);
 }
 
 void ARegularAnimal::CacheTargetPlayer()
@@ -151,6 +154,14 @@ void ARegularAnimal::UpdateDash(float DeltaTime)
 void ARegularAnimal::UpdateRecover(float DeltaTime)
 {
 	if (StateElapsedTime >= RecoverTime)
+	{
+		ChangeState(ERegularAnimalState::Approaching);
+	}
+}
+
+void ARegularAnimal::UpdateHitStun(float DeltaTime)
+{
+	if (StateElapsedTime >= HitStunTime)
 	{
 		ChangeState(ERegularAnimalState::Approaching);
 	}
