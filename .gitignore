@@ -1,0 +1,8 @@
+Binaries/
+Intermediate/
+DerivedDataCache/
+Saved/
+HungryHero (Mac).xcworkspace/
+Intermediate/ProjectFiles/
+.DS_Store
+.idea/

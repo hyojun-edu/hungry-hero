@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game GDD Planner"
+  short_description: "Plan feasible Unreal class game GDDs"
+  default_prompt: "Use $game-gdd-planner to turn my one-line game idea into a feasible Unreal 5.8 class-project GDD."
