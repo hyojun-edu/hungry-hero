@@ -47,14 +47,29 @@ bool UHungryHeroHealthComponent::IsGameOver() const
 	return bIsGameOver;
 }
 
+void UHungryHeroHealthComponent::ApplyDamage(float DamageAmount)
+{
+	ReduceHealth(DamageAmount);
+}
+
 void UHungryHeroHealthComponent::DrainHealth(float DeltaTime)
+{
+	ReduceHealth(HealthDrainPerSecond * DeltaTime);
+}
+
+void UHungryHeroHealthComponent::ReduceHealth(float DamageAmount)
 {
 	if (bIsGameOver)
 	{
 		return;
 	}
 
-	CurrentHealth = FMath::Max(0.0f, CurrentHealth - (HealthDrainPerSecond * DeltaTime));
+	if (DamageAmount <= 0.0f)
+	{
+		return;
+	}
+
+	CurrentHealth = FMath::Max(0.0f, CurrentHealth - DamageAmount);
 	if (CurrentHealth <= 0.0f)
 	{
 		bIsGameOver = true;

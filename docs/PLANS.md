@@ -14,6 +14,7 @@
 | 01-4 | [Tasks/01-4_movement_facing_priority.md](../Tasks/01-4_movement_facing_priority.md) | 마우스 이동 방향 회전 유지 | 완료 |
 | 01-5 | [Tasks/01-5_player_blueprint_setup.md](../Tasks/01-5_player_blueprint_setup.md) | 플레이어 Blueprint 관리 준비 | 완료 |
 | 01-6 | [Tasks/01-6_player_health_and_game_over.md](../Tasks/01-6_player_health_and_game_over.md) | 플레이어 체력 감소와 게임오버 | 완료 |
+| 01-7 | [Tasks/01-7_regular_animal_spawn_and_dash.md](../Tasks/01-7_regular_animal_spawn_and_dash.md) | 일반 동물 스폰과 돌진 | 완료 |
 
 ## 상태 범례
 
@@ -22,6 +23,9 @@
 - `완료`: 구현 및 현재 확인 모드 기준 확인 완료
 
 ## 최근 작업 로그
+- 2026-08-05: 01-7 결과 확인 완료. 사용자 확인에 따라 일반 동물 반복 스폰, 가장자리 등장, 플레이어 접근, 돌진 예고 후 돌진, 측면 회피 가능, 돌진 충돌 시 체력 10 감소, 범위 밖 요소 미발생 항목을 완료 처리하고 단계 상태를 완료로 변경했다.
+- 2026-08-05: 01-7 일반 동물 스폰과 돌진 코드 구현. `RegularAnimal`과 `RegularAnimalSpawner`를 추가하고 `HungryHeroHealthComponent`에 외부 데미지 적용 함수를 추가했다. Blueprint 생성, 스포너 배치, 컴파일 및 PIE 결과 확인 대기 중.
+- 2026-08-05: 사용자 요청 템플릿을 기준으로 01-7 일반 동물 스폰과 돌진 task를 추가했다. 01-6 다음 순서로 적합하고, 동물 처치 후 음식 생성·점수 계산·보스·최종 모델 연동을 제외해 한 단계 범위로 유지했다.
 - 2026-08-05: 01-6 결과 확인 완료. 사용자 확인에 따라 체력바와 체력 숫자 표시, 체력 감소, 약 30초 후 체력 0, `GAME OVER` 문구, 범위 밖 요소 미생성을 완료 처리하고 단계 상태를 완료로 변경했다.
 - 2026-08-05: 01-6 체력 감소와 게임오버 구현. `HungryHeroHealthComponent`와 `HungryHeroHealthHud`를 추가하고 `HungryHeroPlayerCharacter`에 체력 컴포넌트를 연결했다. `BP_HungryHeroGameMode` HUD Class 설정 및 PIE 결과 확인 대기 중.
 - 2026-08-05: 사용자 요청 템플릿을 기준으로 01-6 플레이어 체력 감소와 게임오버 task를 추가했다. 01-5 다음 순서로 적합하고, 적·음식·점수·보스를 제외해 한 단계 범위로 유지했다.

@@ -1,0 +1,116 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "RegularAnimal.generated.h"
+
+class USphereComponent;
+class UStaticMeshComponent;
+class UPrimitiveComponent;
+class APawn;
+
+UENUM()
+enum class ERegularAnimalState : uint8
+{
+	Approaching,
+	PreparingDash,
+	Dashing,
+	Recovering
+};
+
+UCLASS(Blueprintable)
+class HUNGRYHERO_API ARegularAnimal : public AActor
+{
+	GENERATED_BODY()
+
+public:
+	// 일반 동물의 큐브 기반 접근과 돌진 동작을 준비한다.
+	ARegularAnimal();
+
+	// 현재 상태에 맞춰 플레이어 추적, 돌진 예고, 돌진을 갱신한다.
+	virtual void Tick(float DeltaTime) override;
+
+protected:
+	// 플레이어를 찾고 돌진 충돌 이벤트를 연결한다.
+	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animal|Prototype")
+	TObjectPtr<USphereComponent> CollisionComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animal|Prototype")
+	TObjectPtr<UStaticMeshComponent> PrototypeBodyMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animal|Prototype")
+	TObjectPtr<UStaticMeshComponent> DashDirectionVisualMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
+	float ApproachSpeed = 220.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
+	float DashSpeed = 850.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
+	float DashStartDistance = 360.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
+	float DashPrepareTime = 0.55f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
+	float DashDuration = 0.45f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Movement")
+	float RecoverTime = 0.55f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Combat")
+	float DashDamage = 10.0f;
+
+private:
+	TWeakObjectPtr<APawn> TargetPlayer;
+
+	ERegularAnimalState CurrentState = ERegularAnimalState::Approaching;
+
+	FVector DashDirection = FVector::ForwardVector;
+
+	float StateElapsedTime = 0.0f;
+
+	bool bDamagedPlayerThisDash = false;
+
+	// 현재 월드의 플레이어 Pawn을 찾아 추적 대상으로 저장한다.
+	void CacheTargetPlayer();
+
+	// 플레이어를 향해 천천히 접근한다.
+	void UpdateApproach(float DeltaTime);
+
+	// 돌진 방향을 보여주며 잠깐 멈춘다.
+	void UpdateDashPreparation(float DeltaTime);
+
+	// 고정된 방향으로 빠르게 돌진한다.
+	void UpdateDash(float DeltaTime);
+
+	// 다음 접근을 시작하기 전 짧게 회복한다.
+	void UpdateRecover(float DeltaTime);
+
+	// 새 상태로 전환하고 상태 시간을 초기화한다.
+	void ChangeState(ERegularAnimalState NewState);
+
+	// 플레이어를 향한 수평 방향을 계산한다.
+	FVector GetDirectionToTarget() const;
+
+	// 주어진 방향을 바라보게 회전한다.
+	void FaceDirection(const FVector& Direction);
+
+	// 이동을 처리하고 바닥 기준 높이를 유지한다.
+	void MoveInDirection(const FVector& Direction, float Speed, float DeltaTime);
+
+	// 돌진 중 충돌한 플레이어에게 체력 피해를 준다.
+	UFUNCTION()
+	void HandleOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
+};

@@ -31,6 +31,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Health")
 	bool IsGameOver() const;
 
+	// 외부 충돌이나 공격으로 체력을 감소시킨다.
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void ApplyDamage(float DamageAmount);
+
 protected:
 	// 시작 시 체력을 최대 체력으로 맞춘다.
 	virtual void BeginPlay() override;
@@ -51,4 +55,7 @@ private:
 
 	// 체력을 감소시키고 0에 도달하면 게임오버 상태로 바꾼다.
 	void DrainHealth(float DeltaTime);
+
+	// 체력 값을 줄이고 게임오버 상태를 갱신한다.
+	void ReduceHealth(float DamageAmount);
 };

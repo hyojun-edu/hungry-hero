@@ -29,6 +29,8 @@
   - `HungryHeroHealthComponent`: 플레이어 체력 감소와 게임오버 상태를 담당하는 컴포넌트
   - `HungryHeroHealthHud`: 체력바와 게임오버 문구를 그리는 Canvas 기반 HUD
   - `HungryHeroKnifeAttackComponent`: 플레이어 단발 칼 공격 입력의 시각 확인용 컴포넌트
+  - `RegularAnimal`: 일반 동물의 접근, 돌진 예고, 돌진 충돌 데미지를 담당하는 프로토타입 Actor
+  - `RegularAnimalSpawner`: 방 가장자리 근처에서 일반 동물을 반복 생성하는 Actor
   - `PrototypeRoom`: 사각형 프로토타입 방 Actor와 확인용 기본 방향성 조명
   - `FixedRoomCamera`: 방 확인용 고정 카메라 Actor
   - `HungryHeroGameMode`: 플레이어 클래스 지정과 분리된 기본 GameMode
