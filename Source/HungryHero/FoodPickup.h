@@ -8,7 +8,6 @@
 
 class USphereComponent;
 class UStaticMeshComponent;
-class UTextRenderComponent;
 
 UCLASS(Blueprintable)
 class HUNGRYHERO_API AFoodPickup : public AActor
@@ -28,9 +27,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Food|Prototype")
 	TObjectPtr<UStaticMeshComponent> PrototypeFoodMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Food|Prototype")
-	TObjectPtr<UTextRenderComponent> FoodLabelText;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Food|Pickup")
 	float HealAmount = 20.0f;

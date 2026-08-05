@@ -4,7 +4,6 @@
 
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/TextRenderComponent.h"
 #include "Engine/StaticMesh.h"
 #include "HungryHeroHealthComponent.h"
 #include "HungryHeroScoreComponent.h"
@@ -28,17 +27,6 @@ AFoodPickup::AFoodPickup()
 	PrototypeFoodMesh->SetupAttachment(CollisionComponent);
 	PrototypeFoodMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PrototypeFoodMesh->SetRelativeScale3D(FVector(0.45f, 0.45f, 0.25f));
-
-	FoodLabelText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("FoodLabelText"));
-	FoodLabelText->SetupAttachment(CollisionComponent);
-	FoodLabelText->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	FoodLabelText->SetRelativeLocation(FVector(0.0f, 0.0f, 42.0f));
-	FoodLabelText->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
-	FoodLabelText->SetHorizontalAlignment(EHTA_Center);
-	FoodLabelText->SetVerticalAlignment(EVRTA_TextCenter);
-	FoodLabelText->SetText(FText::FromString(TEXT("FOOD")));
-	FoodLabelText->SetTextRenderColor(FColor::Orange);
-	FoodLabelText->SetWorldSize(26.0f);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMesh(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 	if (SphereMesh.Succeeded())
