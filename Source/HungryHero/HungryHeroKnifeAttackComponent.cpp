@@ -2,77 +2,111 @@
 
 #include "HungryHeroKnifeAttackComponent.h"
 
-#include "Components/StaticMeshComponent.h"
-#include "Engine/StaticMesh.h"
+#include "DrawDebugHelpers.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "GameFramework/Actor.h"
-#include "TimerManager.h"
+#include "RegularAnimal.h"
 
 UHungryHeroKnifeAttackComponent::UHungryHeroKnifeAttackComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UHungryHeroKnifeAttackComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	CreateAttackVisualMesh();
-}
-
 void UHungryHeroKnifeAttackComponent::StartAttack()
 {
-	if (!AttackVisualMesh)
-	{
-		return;
-	}
-
-	AttackVisualMesh->SetHiddenInGame(false);
-
-	if (UWorld* World = GetWorld())
-	{
-		World->GetTimerManager().ClearTimer(AttackVisibleTimerHandle);
-		World->GetTimerManager().SetTimer(
-			AttackVisibleTimerHandle,
-			this,
-			&UHungryHeroKnifeAttackComponent::HideAttackVisual,
-			AttackVisibleTime,
-			false);
-	}
+	const TArray<ARegularAnimal*> AttackCandidates = FindAttackCandidates();
+	DrawAttackConeDebug(AttackCandidates);
 }
 
-void UHungryHeroKnifeAttackComponent::CreateAttackVisualMesh()
+TArray<ARegularAnimal*> UHungryHeroKnifeAttackComponent::FindAttackCandidates() const
 {
-	AActor* Owner = GetOwner();
-	if (!Owner || AttackVisualMesh)
+	TArray<ARegularAnimal*> AttackCandidates;
+
+	UWorld* World = GetWorld();
+	if (!World)
 	{
-		return;
+		return AttackCandidates;
 	}
 
-	AttackVisualMesh = NewObject<UStaticMeshComponent>(Owner, TEXT("KnifeAttackVisualMesh"));
-	if (!AttackVisualMesh)
+	for (TActorIterator<ARegularAnimal> AnimalIterator(World); AnimalIterator; ++AnimalIterator)
 	{
-		return;
+		ARegularAnimal* Animal = *AnimalIterator;
+		if (IsValid(Animal) && IsActorInAttackCone(Animal))
+		{
+			AttackCandidates.Add(Animal);
+		}
 	}
 
-	if (UStaticMesh* CubeMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube")))
-	{
-		AttackVisualMesh->SetStaticMesh(CubeMesh);
-	}
-
-	Owner->AddInstanceComponent(AttackVisualMesh);
-	AttackVisualMesh->SetupAttachment(Owner->GetRootComponent());
-	AttackVisualMesh->SetRelativeLocation(FVector(90.0f, 0.0f, 0.0f));
-	AttackVisualMesh->SetRelativeScale3D(FVector(1.1f, 0.16f, 0.08f));
-	AttackVisualMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	AttackVisualMesh->SetHiddenInGame(true);
-	AttackVisualMesh->RegisterComponent();
+	return AttackCandidates;
 }
 
-void UHungryHeroKnifeAttackComponent::HideAttackVisual()
+bool UHungryHeroKnifeAttackComponent::IsActorInAttackCone(const AActor* TargetActor) const
 {
-	if (AttackVisualMesh)
+	const AActor* Owner = GetOwner();
+	if (!Owner || !TargetActor || AttackRange <= 0.0f)
 	{
-		AttackVisualMesh->SetHiddenInGame(true);
+		return false;
+	}
+
+	FVector ToTarget = TargetActor->GetActorLocation() - Owner->GetActorLocation();
+	ToTarget.Z = 0.0f;
+
+	const float Distance = ToTarget.Size();
+	if (Distance <= 0.0f || Distance > AttackRange)
+	{
+		return false;
+	}
+
+	FVector Forward = Owner->GetActorForwardVector();
+	Forward.Z = 0.0f;
+	Forward.Normalize();
+
+	const FVector DirectionToTarget = ToTarget / Distance;
+	const float Dot = FVector::DotProduct(Forward, DirectionToTarget);
+	const float AngleDegrees = FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp(Dot, -1.0f, 1.0f)));
+	return AngleDegrees <= AttackHalfAngleDegrees;
+}
+
+void UHungryHeroKnifeAttackComponent::DrawAttackConeDebug(const TArray<ARegularAnimal*>& AttackCandidates) const
+{
+	const AActor* Owner = GetOwner();
+	UWorld* World = GetWorld();
+	if (!Owner || !World || AttackRange <= 0.0f)
+	{
+		return;
+	}
+
+	const int32 SegmentCount = FMath::Max(AttackDebugSegmentCount, 2);
+	const FVector Origin = Owner->GetActorLocation() + FVector(0.0f, 0.0f, AttackDebugHeight);
+	const FVector Forward = Owner->GetActorForwardVector().GetSafeNormal2D();
+	const FColor ConeColor = FColor::Yellow;
+	const FColor CandidateColor = FColor::Green;
+
+	FVector PreviousPoint = FVector::ZeroVector;
+	for (int32 SegmentIndex = 0; SegmentIndex <= SegmentCount; ++SegmentIndex)
+	{
+		const float SegmentAlpha = static_cast<float>(SegmentIndex) / static_cast<float>(SegmentCount);
+		const float AngleDegrees = FMath::Lerp(-AttackHalfAngleDegrees, AttackHalfAngleDegrees, SegmentAlpha);
+		const FVector SegmentDirection = Forward.RotateAngleAxis(AngleDegrees, FVector::UpVector);
+		const FVector SegmentPoint = Origin + SegmentDirection * AttackRange;
+
+		DrawDebugLine(World, Origin, SegmentPoint, ConeColor, false, AttackDebugVisibleTime, 0, 2.0f);
+
+		if (SegmentIndex > 0)
+		{
+			DrawDebugLine(World, PreviousPoint, SegmentPoint, ConeColor, false, AttackDebugVisibleTime, 0, 3.0f);
+		}
+
+		PreviousPoint = SegmentPoint;
+	}
+
+	for (const ARegularAnimal* Candidate : AttackCandidates)
+	{
+		if (IsValid(Candidate))
+		{
+			const FVector CandidateLocation = Candidate->GetActorLocation() + FVector(0.0f, 0.0f, AttackDebugHeight + 18.0f);
+			DrawDebugSphere(World, CandidateLocation, 38.0f, 12, CandidateColor, false, AttackDebugVisibleTime, 0, 3.0f);
+		}
 	}
 }
