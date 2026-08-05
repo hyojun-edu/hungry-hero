@@ -10,7 +10,7 @@
 
 AHungryHeroPlayerPawn::AHungryHeroPlayerPawn()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
 	SetRootComponent(BodyMesh);
@@ -33,13 +33,24 @@ AHungryHeroPlayerPawn::AHungryHeroPlayerPawn()
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
+void AHungryHeroPlayerPawn::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UpdateFacingFromMouseInput(DeltaTime);
+	bHasMouseFacingInputThisFrame = false;
+	MouseFacingForwardValue = 0.0f;
+	MouseFacingRightValue = 0.0f;
+}
+
 void AHungryHeroPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &AHungryHeroPlayerPawn::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AHungryHeroPlayerPawn::MoveRight);
-	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AHungryHeroPlayerPawn::TurnWithMouse);
+	PlayerInputComponent->BindAxis(TEXT("MouseFaceForward"), this, &AHungryHeroPlayerPawn::SetMouseFacingForward);
+	PlayerInputComponent->BindAxis(TEXT("MouseFaceRight"), this, &AHungryHeroPlayerPawn::SetMouseFacingRight);
 	PlayerInputComponent->BindAction(TEXT("KnifeAttack"), IE_Pressed, this, &AHungryHeroPlayerPawn::Attack);
 }
 
@@ -53,14 +64,55 @@ void AHungryHeroPlayerPawn::MoveRight(float Value)
 	AddMovementInput(FVector::RightVector, Value);
 }
 
-void AHungryHeroPlayerPawn::TurnWithMouse(float Value)
+void AHungryHeroPlayerPawn::SetMouseFacingForward(float Value)
 {
 	if (FMath::IsNearlyZero(Value))
 	{
 		return;
 	}
 
-	AddActorWorldRotation(FRotator(0.0f, Value * MouseTurnRate, 0.0f));
+	MouseFacingForwardValue = Value;
+	bHasMouseFacingInputThisFrame = true;
+}
+
+void AHungryHeroPlayerPawn::SetMouseFacingRight(float Value)
+{
+	if (FMath::IsNearlyZero(Value))
+	{
+		return;
+	}
+
+	MouseFacingRightValue = Value;
+	bHasMouseFacingInputThisFrame = true;
+}
+
+void AHungryHeroPlayerPawn::UpdateFacingFromMouseInput(float DeltaTime)
+{
+	if (!bHasMouseFacingInputThisFrame)
+	{
+		return;
+	}
+
+	RotateTowardInputDirection(
+		FVector(MouseFacingForwardValue, MouseFacingRightValue, 0.0f),
+		DeltaTime,
+		MouseFacingTurnSpeed);
+}
+
+void AHungryHeroPlayerPawn::RotateTowardInputDirection(const FVector& InputDirection, float DeltaTime, float TurnSpeed)
+{
+	if (InputDirection.IsNearlyZero())
+	{
+		return;
+	}
+
+	const FRotator TargetRotation = InputDirection.Rotation();
+	const FRotator NewRotation = FMath::RInterpTo(
+		GetActorRotation(),
+		FRotator(0.0f, TargetRotation.Yaw, 0.0f),
+		DeltaTime,
+		TurnSpeed);
+	SetActorRotation(FRotator(0.0f, NewRotation.Yaw, 0.0f));
 }
 
 void AHungryHeroPlayerPawn::Attack()

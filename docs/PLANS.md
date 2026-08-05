@@ -10,7 +10,8 @@
 | --- | --- | --- | --- |
 | 01-1 | [Tasks/01-1_room_and_fixed_camera.md](../Tasks/01-1_room_and_fixed_camera.md) | 플레이어가 움직일 수 있는 사각형 방과 고정 카메라 준비 | 완료 |
 | 01-2 | [Tasks/01-2_player_movement_and_knife_attack.md](../Tasks/01-2_player_movement_and_knife_attack.md) | 플레이어 이동과 단발 칼 공격 입력 확인 | 완료 |
-| 01-3 | [Tasks/01-3_mouse_facing_and_spacebar_attack.md](../Tasks/01-3_mouse_facing_and_spacebar_attack.md) | 마우스 기준 플레이어 회전과 SpaceBar 전용 칼 공격 입력 정리 | 완료 |
+| 01-3 | [Tasks/01-3_mouse_facing_and_spacebar_attack.md](../Tasks/01-3_mouse_facing_and_spacebar_attack.md) | 마우스 기준 플레이어 회전과 칼 공격 입력 정리 | 완료 |
+| 01-4 | [Tasks/01-4_movement_facing_priority.md](../Tasks/01-4_movement_facing_priority.md) | 마우스 이동 방향 회전 유지 | 완료 |
 
 ## 상태 범례
 
@@ -19,16 +20,8 @@
 - `완료`: 구현 및 현재 확인 모드 기준 확인 완료
 
 ## 최근 작업 로그
-- 2026-08-05: 01-3 결과 확인 완료. 사용자 확인에 따라 WASD 이동, 이동/정지 중 마우스 회전, 마우스 왼쪽 클릭 공격 제외, SpaceBar 전용 공격 표시, 범위 밖 동작 미발생 확인 항목을 완료 처리하고 단계 상태를 완료로 변경했다.
-- 2026-08-05: 01-3 구현 코드 추가. 플레이어 Pawn에 `Turn` 입력 기반 마우스 좌우 회전을 연결하고, `KnifeAttack` 입력에서 마우스 왼쪽 클릭 매핑을 제거해 `SpaceBar` 전용 공격으로 정리했다. 수동 컴파일과 PIE 결과 확인 대기 중.
-- 2026-08-05: 01-3 task 문서 초안 작성. 마우스 기준 플레이어 회전과 SpaceBar 전용 칼 공격 입력 정리를 다음 단계로 추가했다.
-- 2026-08-05: 01-2 결과 확인 완료. 사용자 확인에 따라 WASD 이동, 마우스 왼쪽 클릭과 SpaceBar 단발 공격 표시, 범위 밖 동작 미발생 확인 항목을 완료 처리하고 단계 상태를 완료로 변경했다.
-- 2026-08-05: 01-2 구현 코드 추가. `HungryHeroKnifeAttackComponent`를 새로 만들고, `HungryHeroPlayerPawn`에서 `KnifeAttack` 입력을 위임해 마우스 왼쪽 클릭과 SpaceBar 단발 공격 표시가 가능하도록 했다. 수동 컴파일과 PIE 결과 확인 대기 중.
-- 2026-08-05: 01-1 구현 코드 추가. `PrototypeRoom`과 `FixedRoomCamera`를 분리하고, 큐브 플레이어 Pawn 및 기본 GameMode/Input 설정을 추가했다. 수동 에디터 배치와 PIE 결과 확인 대기 중.
-- 2026-08-05: 01-1 컴파일 오류 대응. `ConstructorHelpers.h` include 경로를 `UObject/ConstructorHelpers.h`로 수정했다.
-- 2026-08-05: 01-1 결과 확인 보정. 조명이 없어 확인이 불가능해 `PrototypeRoom`에 방 내부 확인용 기본 PointLight를 추가했다.
-- 2026-08-05: 01-1 화면 미표시 원인 대응. `FixedRoomCamera` 기본 위치와 회전을 방 중심을 바라보도록 수정했다.
-- 2026-08-05: 01-1 카메라 시점 확인 보정. PIE 시작 시 `FixedRoomCamera`가 즉시 ViewTarget이 되도록 전환 파라미터를 명시했다.
-- 2026-08-05: 01-1 조명 단순화. 확인용 기본 조명을 PointLight에서 DirectionalLight로 변경했다.
-- 2026-08-05: 01-1 카메라 방향 보정. `FixedRoomCamera`가 에디터 배치 중에도 `TargetLocation`을 바라보도록 `OnConstruction` 회전 갱신을 추가했다.
-- 2026-08-05: 01-1 결과 확인 완료. 사용자 확인에 따라 PlayerStart 배치와 PIE 결과 확인 항목을 완료 처리하고 단계 상태를 완료로 변경했다.
+- 2026-08-05: 01-3/01-4 결과 확인 완료. 사용자 확인에 따라 마우스 왼쪽 클릭과 SpaceBar 공격, 이동 중 자동 회전 미발생, 마우스 이동 방향 기준 회전, 범위 밖 동작 미발생 확인 항목을 완료 처리하고 단계 상태를 완료로 변경했다.
+- 2026-08-05: 01-4 이동 방향 자동 회전 제거. 사용자 요청에 따라 이동 입력 방향으로 자동 회전하는 처리를 제외하고, 마우스 이동 방향만 플레이어 정면 방향으로 쓰도록 task와 Pawn 코드를 갱신했다. 수동 컴파일과 PIE 결과 확인 대기 중.
+- 2026-08-05: 01-3/01-4 공격 입력 변경. 사용자 요청에 따라 `KnifeAttack`에 마우스 왼쪽 클릭 매핑을 다시 추가하고, 01-3의 SpaceBar 전용 공격 조건을 SpaceBar 또는 마우스 왼쪽 클릭 공격 조건으로 갱신했다. 수동 컴파일과 PIE 결과 확인 대기 중.
+- 2026-08-05: 01-4 마우스 방향 정의 변경. 마우스 좌우 누적 회전 대신 `MouseX`/`MouseY` 이동 벡터가 플레이어 정면 방향이 되도록 입력 매핑과 Pawn 회전 처리를 변경했다. 수동 컴파일과 PIE 결과 확인 대기 중.
+- 2026-08-05: 01-4 이동 방향 회전 보정. 이동 입력 방향 자동 회전을 즉시 회전에서 점진 보간 회전으로 변경했다. 수동 컴파일과 PIE 결과 확인 대기 중.
