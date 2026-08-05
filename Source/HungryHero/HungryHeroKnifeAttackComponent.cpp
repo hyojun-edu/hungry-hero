@@ -18,11 +18,13 @@ void UHungryHeroKnifeAttackComponent::StartAttack()
 	const TArray<ARegularAnimal*> AttackCandidates = FindAttackCandidates();
 	DrawAttackConeDebug(AttackCandidates);
 
+	const AActor* Owner = GetOwner();
+	const FVector AttackSourceLocation = Owner ? Owner->GetActorLocation() : FVector::ZeroVector;
 	for (ARegularAnimal* AttackCandidate : AttackCandidates)
 	{
 		if (IsValid(AttackCandidate))
 		{
-			AttackCandidate->ApplyKnifeHit();
+			AttackCandidate->ApplyKnifeHit(AttackSourceLocation);
 		}
 	}
 }

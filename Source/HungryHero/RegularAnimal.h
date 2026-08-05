@@ -33,8 +33,11 @@ public:
 	// 현재 상태에 맞춰 플레이어 추적, 돌진 예고, 돌진을 갱신한다.
 	virtual void Tick(float DeltaTime) override;
 
-	// 칼 공격에 맞았을 때 일반 동물 전투 컴포넌트로 피격 처리를 전달한다.
-	void ApplyKnifeHit();
+	// 칼 공격에 맞았을 때 일반 동물 전투 컴포넌트로 피격 위치를 전달한다.
+	void ApplyKnifeHit(const FVector& HitSourceLocation);
+
+	// 칼 피격으로 돌진 또는 돌진 예고를 중단하고 회복 상태로 전환한다.
+	void InterruptDashForKnifeHit();
 
 protected:
 	// 플레이어를 찾고 돌진 충돌 이벤트를 연결한다.

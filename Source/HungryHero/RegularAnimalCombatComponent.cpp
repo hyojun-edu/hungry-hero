@@ -5,6 +5,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
 #include "FoodPickup.h"
+#include "GameFramework/Actor.h"
+#include "RegularAnimal.h"
 #include "TimerManager.h"
 
 URegularAnimalCombatComponent::URegularAnimalCombatComponent()
@@ -20,7 +22,7 @@ void URegularAnimalCombatComponent::BeginPlay()
 	CacheBodyMesh();
 }
 
-void URegularAnimalCombatComponent::ApplyKnifeHit()
+void URegularAnimalCombatComponent::ApplyKnifeHit(const FVector& HitSourceLocation)
 {
 	if (bDefeated)
 	{
@@ -28,7 +30,13 @@ void URegularAnimalCombatComponent::ApplyKnifeHit()
 	}
 
 	++CurrentKnifeHits;
+	if (ARegularAnimal* OwnerAnimal = Cast<ARegularAnimal>(GetOwner()))
+	{
+		OwnerAnimal->InterruptDashForKnifeHit();
+	}
+
 	ShowHitReaction();
+	ApplyKnockback(HitSourceLocation);
 
 	if (CurrentKnifeHits >= MaxKnifeHits)
 	{
@@ -64,6 +72,26 @@ void URegularAnimalCombatComponent::ShowHitReaction()
 			HitReactionVisibleTime,
 			false);
 	}
+}
+
+void URegularAnimalCombatComponent::ApplyKnockback(const FVector& HitSourceLocation)
+{
+	AActor* Owner = GetOwner();
+	if (!Owner || KnockbackDistance <= 0.0f)
+	{
+		return;
+	}
+
+	FVector KnockbackDirection = Owner->GetActorLocation() - HitSourceLocation;
+	KnockbackDirection.Z = 0.0f;
+	KnockbackDirection.Normalize();
+	if (KnockbackDirection.IsNearlyZero())
+	{
+		KnockbackDirection = -Owner->GetActorForwardVector().GetSafeNormal2D();
+	}
+
+	FHitResult HitResult;
+	Owner->AddActorWorldOffset(KnockbackDirection * KnockbackDistance, true, &HitResult);
 }
 
 void URegularAnimalCombatComponent::ClearHitReaction()

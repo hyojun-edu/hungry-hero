@@ -19,8 +19,8 @@ public:
 	// 일반 동물의 피격, 처치, 음식 드롭 상태를 준비한다.
 	URegularAnimalCombatComponent();
 
-	// 칼 공격 1회를 일반 동물에게 적용한다.
-	void ApplyKnifeHit();
+	// 칼 공격 1회를 일반 동물에게 적용하고 공격자 반대 방향으로 밀어낸다.
+	void ApplyKnifeHit(const FVector& HitSourceLocation);
 
 protected:
 	virtual void BeginPlay() override;
@@ -30,6 +30,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Combat")
 	float HitReactionVisibleTime = 0.12f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Combat")
+	float KnockbackDistance = 85.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animal|Food")
 	TSubclassOf<AFoodPickup> FoodPickupClass;
@@ -58,6 +61,9 @@ private:
 
 	// 짧은 피격 반응을 표시한다.
 	void ShowHitReaction();
+
+	// 공격자 반대 방향으로 짧게 밀어 타격감을 만든다.
+	void ApplyKnockback(const FVector& HitSourceLocation);
 
 	// 피격 반응 표시를 기본 상태로 되돌린다.
 	void ClearHitReaction();

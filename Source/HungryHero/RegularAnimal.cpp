@@ -88,11 +88,19 @@ void ARegularAnimal::Tick(float DeltaTime)
 	ResolveAnimalSeparation(DeltaTime);
 }
 
-void ARegularAnimal::ApplyKnifeHit()
+void ARegularAnimal::ApplyKnifeHit(const FVector& HitSourceLocation)
 {
 	if (CombatComponent)
 	{
-		CombatComponent->ApplyKnifeHit();
+		CombatComponent->ApplyKnifeHit(HitSourceLocation);
+	}
+}
+
+void ARegularAnimal::InterruptDashForKnifeHit()
+{
+	if (CurrentState == ERegularAnimalState::PreparingDash || CurrentState == ERegularAnimalState::Dashing)
+	{
+		ChangeState(ERegularAnimalState::Recovering);
 	}
 }
 
