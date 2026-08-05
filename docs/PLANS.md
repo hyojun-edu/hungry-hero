@@ -9,6 +9,7 @@
 | 단계 | Task 문서 | 해야 할 항목 | 상태 |
 | --- | --- | --- | --- |
 | 01-1 | [Tasks/01-1_room_and_fixed_camera.md](../Tasks/01-1_room_and_fixed_camera.md) | 플레이어가 움직일 수 있는 사각형 방과 고정 카메라 준비 | 완료 |
+| 01-2 | [Tasks/01-2_player_movement_and_knife_attack.md](../Tasks/01-2_player_movement_and_knife_attack.md) | 플레이어 이동과 단발 칼 공격 입력 확인 | 완료 |
 
 ## 상태 범례
 
@@ -17,6 +18,8 @@
 - `완료`: 구현 및 현재 확인 모드 기준 확인 완료
 
 ## 최근 작업 로그
+- 2026-08-05: 01-2 결과 확인 완료. 사용자 확인에 따라 WASD 이동, 마우스 왼쪽 클릭과 SpaceBar 단발 공격 표시, 범위 밖 동작 미발생 확인 항목을 완료 처리하고 단계 상태를 완료로 변경했다.
+- 2026-08-05: 01-2 구현 코드 추가. `HungryHeroKnifeAttackComponent`를 새로 만들고, `HungryHeroPlayerPawn`에서 `KnifeAttack` 입력을 위임해 마우스 왼쪽 클릭과 SpaceBar 단발 공격 표시가 가능하도록 했다. 수동 컴파일과 PIE 결과 확인 대기 중.
 - 2026-08-05: 01-1 구현 코드 추가. `PrototypeRoom`과 `FixedRoomCamera`를 분리하고, 큐브 플레이어 Pawn 및 기본 GameMode/Input 설정을 추가했다. 수동 에디터 배치와 PIE 결과 확인 대기 중.
 - 2026-08-05: 01-1 컴파일 오류 대응. `ConstructorHelpers.h` include 경로를 `UObject/ConstructorHelpers.h`로 수정했다.
 - 2026-08-05: 01-1 결과 확인 보정. 조명이 없어 확인이 불가능해 `PrototypeRoom`에 방 내부 확인용 기본 PointLight를 추가했다.

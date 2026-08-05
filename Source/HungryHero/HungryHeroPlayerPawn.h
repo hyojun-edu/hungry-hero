@@ -7,6 +7,7 @@
 #include "HungryHeroPlayerPawn.generated.h"
 
 class UFloatingPawnMovement;
+class UHungryHeroKnifeAttackComponent;
 class UStaticMeshComponent;
 
 UCLASS()
@@ -29,9 +30,15 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Player")
 	TObjectPtr<UFloatingPawnMovement> MovementComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = "Player")
+	TObjectPtr<UHungryHeroKnifeAttackComponent> KnifeAttackComponent;
+
 	// 앞뒤 이동 입력을 이동 컴포넌트에 전달한다.
 	void MoveForward(float Value);
 
 	// 좌우 이동 입력을 이동 컴포넌트에 전달한다.
 	void MoveRight(float Value);
+
+	// 단발 칼 공격 입력을 공격 컴포넌트에 전달한다.
+	void Attack();
 };

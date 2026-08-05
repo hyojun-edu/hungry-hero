@@ -2,6 +2,7 @@
 
 #include "HungryHeroPlayerPawn.h"
 
+#include "HungryHeroKnifeAttackComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
@@ -27,6 +28,8 @@ AHungryHeroPlayerPawn::AHungryHeroPlayerPawn()
 	MovementComponent->Acceleration = 4000.0f;
 	MovementComponent->Deceleration = 4000.0f;
 
+	KnifeAttackComponent = CreateDefaultSubobject<UHungryHeroKnifeAttackComponent>(TEXT("KnifeAttackComponent"));
+
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
@@ -36,6 +39,7 @@ void AHungryHeroPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &AHungryHeroPlayerPawn::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AHungryHeroPlayerPawn::MoveRight);
+	PlayerInputComponent->BindAction(TEXT("KnifeAttack"), IE_Pressed, this, &AHungryHeroPlayerPawn::Attack);
 }
 
 void AHungryHeroPlayerPawn::MoveForward(float Value)
@@ -46,4 +50,12 @@ void AHungryHeroPlayerPawn::MoveForward(float Value)
 void AHungryHeroPlayerPawn::MoveRight(float Value)
 {
 	AddMovementInput(FVector::RightVector, Value);
+}
+
+void AHungryHeroPlayerPawn::Attack()
+{
+	if (KnifeAttackComponent)
+	{
+		KnifeAttackComponent->StartAttack();
+	}
 }

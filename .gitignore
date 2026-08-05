@@ -6,3 +6,6 @@ HungryHero (Mac).xcworkspace/
 Intermediate/ProjectFiles/
 .DS_Store
 .idea/
+__MACOSX
+.vs/
+.vsconfig
