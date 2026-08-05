@@ -33,11 +33,17 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Player")
 	TObjectPtr<UHungryHeroKnifeAttackComponent> KnifeAttackComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	float MouseTurnRate = 2.0f;
+
 	// 앞뒤 이동 입력을 이동 컴포넌트에 전달한다.
 	void MoveForward(float Value);
 
 	// 좌우 이동 입력을 이동 컴포넌트에 전달한다.
 	void MoveRight(float Value);
+
+	// 마우스 좌우 입력으로 플레이어가 바라보는 방향을 회전한다.
+	void TurnWithMouse(float Value);
 
 	// 단발 칼 공격 입력을 공격 컴포넌트에 전달한다.
 	void Attack();

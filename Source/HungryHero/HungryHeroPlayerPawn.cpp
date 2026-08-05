@@ -39,6 +39,7 @@ void AHungryHeroPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &AHungryHeroPlayerPawn::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AHungryHeroPlayerPawn::MoveRight);
+	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AHungryHeroPlayerPawn::TurnWithMouse);
 	PlayerInputComponent->BindAction(TEXT("KnifeAttack"), IE_Pressed, this, &AHungryHeroPlayerPawn::Attack);
 }
 
@@ -50,6 +51,16 @@ void AHungryHeroPlayerPawn::MoveForward(float Value)
 void AHungryHeroPlayerPawn::MoveRight(float Value)
 {
 	AddMovementInput(FVector::RightVector, Value);
+}
+
+void AHungryHeroPlayerPawn::TurnWithMouse(float Value)
+{
+	if (FMath::IsNearlyZero(Value))
+	{
+		return;
+	}
+
+	AddActorWorldRotation(FRotator(0.0f, Value * MouseTurnRate, 0.0f));
 }
 
 void AHungryHeroPlayerPawn::Attack()
