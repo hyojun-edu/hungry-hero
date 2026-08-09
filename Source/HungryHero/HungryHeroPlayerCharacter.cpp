@@ -4,6 +4,7 @@
 
 #include "HungryHeroHealthComponent.h"
 #include "HungryHeroKnifeAttackComponent.h"
+#include "HungryHeroMouseFacingComponent.h"
 #include "HungryHeroScoreComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -39,6 +40,7 @@ AHungryHeroPlayerCharacter::AHungryHeroPlayerCharacter()
 	KnifeAttackComponent = CreateDefaultSubobject<UHungryHeroKnifeAttackComponent>(TEXT("KnifeAttackComponent"));
 	HealthComponent = CreateDefaultSubobject<UHungryHeroHealthComponent>(TEXT("HealthComponent"));
 	ScoreComponent = CreateDefaultSubobject<UHungryHeroScoreComponent>(TEXT("ScoreComponent"));
+	MouseFacingComponent = CreateDefaultSubobject<UHungryHeroMouseFacingComponent>(TEXT("MouseFacingComponent"));
 }
 
 void AHungryHeroPlayerCharacter::Tick(float DeltaTime)
@@ -48,16 +50,22 @@ void AHungryHeroPlayerCharacter::Tick(float DeltaTime)
 	if (IsGameOver())
 	{
 		GetCharacterMovement()->StopMovementImmediately();
-		bHasMouseFacingInputThisFrame = false;
-		MouseFacingForwardValue = 0.0f;
-		MouseFacingRightValue = 0.0f;
+		if (MouseFacingComponent)
+		{
+			MouseFacingComponent->UpdateFacing(DeltaTime, true);
+		}
 		return;
 	}
 
-	UpdateFacingFromMouseInput(DeltaTime);
-	bHasMouseFacingInputThisFrame = false;
-	MouseFacingForwardValue = 0.0f;
-	MouseFacingRightValue = 0.0f;
+	if (MouseFacingComponent)
+	{
+		MouseFacingComponent->UpdateFacing(DeltaTime, false);
+	}
+
+	if (KnifeAttackComponent)
+	{
+		KnifeAttackComponent->UpdateAutoAttack(DeltaTime);
+	}
 }
 
 void AHungryHeroPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -68,7 +76,6 @@ void AHungryHeroPlayerCharacter::SetupPlayerInputComponent(UInputComponent* Play
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AHungryHeroPlayerCharacter::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("MouseFaceForward"), this, &AHungryHeroPlayerCharacter::SetMouseFacingForward);
 	PlayerInputComponent->BindAxis(TEXT("MouseFaceRight"), this, &AHungryHeroPlayerCharacter::SetMouseFacingRight);
-	PlayerInputComponent->BindAction(TEXT("KnifeAttack"), IE_Pressed, this, &AHungryHeroPlayerCharacter::Attack);
 }
 
 void AHungryHeroPlayerCharacter::MoveForward(float Value)
@@ -103,8 +110,10 @@ void AHungryHeroPlayerCharacter::SetMouseFacingForward(float Value)
 		return;
 	}
 
-	MouseFacingForwardValue = Value;
-	bHasMouseFacingInputThisFrame = true;
+	if (MouseFacingComponent)
+	{
+		MouseFacingComponent->SetMouseFacingForward(Value);
+	}
 }
 
 void AHungryHeroPlayerCharacter::SetMouseFacingRight(float Value)
@@ -119,44 +128,9 @@ void AHungryHeroPlayerCharacter::SetMouseFacingRight(float Value)
 		return;
 	}
 
-	MouseFacingRightValue = Value;
-	bHasMouseFacingInputThisFrame = true;
-}
-
-void AHungryHeroPlayerCharacter::UpdateFacingFromMouseInput(float DeltaTime)
-{
-	if (!bHasMouseFacingInputThisFrame)
+	if (MouseFacingComponent)
 	{
-		return;
-	}
-
-	RotateTowardInputDirection(
-		FVector(MouseFacingForwardValue, MouseFacingRightValue, 0.0f),
-		DeltaTime,
-		MouseFacingTurnSpeed);
-}
-
-void AHungryHeroPlayerCharacter::RotateTowardInputDirection(const FVector& InputDirection, float DeltaTime, float TurnSpeed)
-{
-	if (InputDirection.IsNearlyZero())
-	{
-		return;
-	}
-
-	const FRotator TargetRotation = InputDirection.Rotation();
-	const FRotator NewRotation = FMath::RInterpTo(
-		GetActorRotation(),
-		FRotator(0.0f, TargetRotation.Yaw, 0.0f),
-		DeltaTime,
-		TurnSpeed);
-	SetActorRotation(FRotator(0.0f, NewRotation.Yaw, 0.0f));
-}
-
-void AHungryHeroPlayerCharacter::Attack()
-{
-	if (!IsGameOver() && KnifeAttackComponent)
-	{
-		KnifeAttackComponent->StartAttack();
+		MouseFacingComponent->SetMouseFacingRight(Value);
 	}
 }
 

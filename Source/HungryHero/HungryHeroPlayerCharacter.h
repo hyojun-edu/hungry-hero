@@ -8,6 +8,7 @@
 
 class UHungryHeroKnifeAttackComponent;
 class UHungryHeroHealthComponent;
+class UHungryHeroMouseFacingComponent;
 class UHungryHeroScoreComponent;
 class UStaticMeshComponent;
 
@@ -39,16 +40,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player|Score")
 	TObjectPtr<UHungryHeroScoreComponent> ScoreComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	float MouseFacingTurnSpeed = 18.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player|Input")
+	TObjectPtr<UHungryHeroMouseFacingComponent> MouseFacingComponent;
 
 private:
-	float MouseFacingForwardValue = 0.0f;
-
-	float MouseFacingRightValue = 0.0f;
-
-	bool bHasMouseFacingInputThisFrame = false;
-
 	// 앞뒤 이동 입력을 이동 컴포넌트에 전달한다.
 	void MoveForward(float Value);
 
@@ -60,15 +55,6 @@ private:
 
 	// 마우스 좌우 이동 입력을 바라볼 방향 값으로 저장한다.
 	void SetMouseFacingRight(float Value);
-
-	// 마우스 이동 방향을 플레이어 정면으로 사용한다.
-	void UpdateFacingFromMouseInput(float DeltaTime);
-
-	// 입력 방향을 기준으로 플레이어가 점진적으로 회전하게 한다.
-	void RotateTowardInputDirection(const FVector& InputDirection, float DeltaTime, float TurnSpeed);
-
-	// 단발 칼 공격 입력을 공격 컴포넌트에 전달한다.
-	void Attack();
 
 	// 체력이 0이 되어 플레이 조작을 막아야 하는지 확인한다.
 	bool IsGameOver() const;

@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "HungryHeroHealthComponent.h"
+#include "HungryHeroKnifeAttackComponent.h"
 #include "HungryHeroScoreComponent.h"
 
 void AHungryHeroHealthHud::DrawHUD()
@@ -23,6 +24,11 @@ void AHungryHeroHealthHud::DrawHUD()
 	if (UHungryHeroScoreComponent* ScoreComponent = FindPlayerScoreComponent())
 	{
 		DrawScoreText(ScoreComponent);
+	}
+
+	if (UHungryHeroKnifeAttackComponent* KnifeAttackComponent = FindPlayerKnifeAttackComponent())
+	{
+		DrawAttackCooldown(KnifeAttackComponent);
 	}
 
 	if (HealthComponent->IsGameOver())
@@ -63,6 +69,22 @@ UHungryHeroScoreComponent* AHungryHeroHealthHud::FindPlayerScoreComponent() cons
 	return ControlledPawn->FindComponentByClass<UHungryHeroScoreComponent>();
 }
 
+UHungryHeroKnifeAttackComponent* AHungryHeroHealthHud::FindPlayerKnifeAttackComponent() const
+{
+	if (!PlayerOwner)
+	{
+		return nullptr;
+	}
+
+	APawn* ControlledPawn = PlayerOwner->GetPawn();
+	if (!ControlledPawn)
+	{
+		return nullptr;
+	}
+
+	return ControlledPawn->FindComponentByClass<UHungryHeroKnifeAttackComponent>();
+}
+
 void AHungryHeroHealthHud::DrawHealthBar(const UHungryHeroHealthComponent* HealthComponent)
 {
 	if (!Canvas || !HealthComponent)
@@ -95,6 +117,29 @@ void AHungryHeroHealthHud::DrawScoreText(const UHungryHeroScoreComponent* ScoreC
 
 	const FString ScoreText = FString::Printf(TEXT("Score %d"), ScoreComponent->GetCurrentScore());
 	DrawText(ScoreText, FLinearColor::Yellow, 48.0f, 116.0f, nullptr, 1.2f, false);
+}
+
+void AHungryHeroHealthHud::DrawAttackCooldown(const UHungryHeroKnifeAttackComponent* KnifeAttackComponent)
+{
+	if (!Canvas || !KnifeAttackComponent)
+	{
+		return;
+	}
+
+	const float BarX = 48.0f;
+	const float BarY = 156.0f;
+	const float BarWidth = 220.0f;
+	const float BarHeight = 18.0f;
+	const float ReadyWidth = BarWidth * KnifeAttackComponent->GetAttackCooldownPercent();
+	const float CooldownRemaining = KnifeAttackComponent->GetAttackCooldownRemaining();
+
+	DrawRect(FLinearColor(0.05f, 0.05f, 0.05f, 0.85f), BarX, BarY, BarWidth, BarHeight);
+	DrawRect(FLinearColor(0.1f, 0.55f, 1.0f, 0.95f), BarX, BarY, ReadyWidth, BarHeight);
+
+	const FString CooldownText = CooldownRemaining > 0.0f
+		? FString::Printf(TEXT("Attack %.1fs"), CooldownRemaining)
+		: TEXT("Attack Ready");
+	DrawText(CooldownText, FLinearColor::White, BarX, BarY + BarHeight + 6.0f, nullptr, 1.0f, false);
 }
 
 void AHungryHeroHealthHud::DrawGameOverText()

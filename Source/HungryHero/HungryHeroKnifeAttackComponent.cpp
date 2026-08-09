@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "GameFramework/Actor.h"
+#include "HungryHeroHealthComponent.h"
 #include "RegularAnimal.h"
 
 UHungryHeroKnifeAttackComponent::UHungryHeroKnifeAttackComponent()
@@ -13,9 +14,34 @@ UHungryHeroKnifeAttackComponent::UHungryHeroKnifeAttackComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UHungryHeroKnifeAttackComponent::StartAttack()
+void UHungryHeroKnifeAttackComponent::UpdateAutoAttack(float DeltaTime)
 {
+	if (IsOwnerGameOver())
+	{
+		return;
+	}
+
+	AttackCooldownRemaining = FMath::Max(0.0f, AttackCooldownRemaining - DeltaTime);
+
+	if (AttackCooldownRemaining <= 0.0f && HasAttackCandidate())
+	{
+		StartAttack();
+	}
+}
+
+bool UHungryHeroKnifeAttackComponent::StartAttack()
+{
+	if (AttackCooldownRemaining > 0.0f || IsOwnerGameOver())
+	{
+		return false;
+	}
+
 	const TArray<ARegularAnimal*> AttackCandidates = FindAttackCandidates();
+	if (AttackCandidates.IsEmpty())
+	{
+		return false;
+	}
+
 	DrawAttackConeDebug(AttackCandidates);
 
 	const AActor* Owner = GetOwner();
@@ -27,6 +53,41 @@ void UHungryHeroKnifeAttackComponent::StartAttack()
 			AttackCandidate->ApplyKnifeHit(AttackSourceLocation);
 		}
 	}
+
+	AttackCooldownRemaining = FMath::Max(AttackCooldownDuration, 0.0f);
+	return true;
+}
+
+float UHungryHeroKnifeAttackComponent::GetAttackCooldownRemaining() const
+{
+	return AttackCooldownRemaining;
+}
+
+float UHungryHeroKnifeAttackComponent::GetAttackCooldownDuration() const
+{
+	return AttackCooldownDuration;
+}
+
+float UHungryHeroKnifeAttackComponent::GetAttackCooldownPercent() const
+{
+	if (AttackCooldownDuration <= 0.0f)
+	{
+		return 1.0f;
+	}
+
+	return FMath::Clamp(1.0f - (AttackCooldownRemaining / AttackCooldownDuration), 0.0f, 1.0f);
+}
+
+bool UHungryHeroKnifeAttackComponent::IsOwnerGameOver() const
+{
+	const AActor* Owner = GetOwner();
+	if (!Owner)
+	{
+		return false;
+	}
+
+	const UHungryHeroHealthComponent* HealthComponent = Owner->FindComponentByClass<UHungryHeroHealthComponent>();
+	return HealthComponent && HealthComponent->IsGameOver();
 }
 
 TArray<ARegularAnimal*> UHungryHeroKnifeAttackComponent::FindAttackCandidates() const
@@ -49,6 +110,26 @@ TArray<ARegularAnimal*> UHungryHeroKnifeAttackComponent::FindAttackCandidates() 
 	}
 
 	return AttackCandidates;
+}
+
+bool UHungryHeroKnifeAttackComponent::HasAttackCandidate() const
+{
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return false;
+	}
+
+	for (TActorIterator<ARegularAnimal> AnimalIterator(World); AnimalIterator; ++AnimalIterator)
+	{
+		ARegularAnimal* Animal = *AnimalIterator;
+		if (IsValid(Animal) && IsActorInAttackCone(Animal))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool UHungryHeroKnifeAttackComponent::IsActorInAttackCone(const AActor* TargetActor) const
