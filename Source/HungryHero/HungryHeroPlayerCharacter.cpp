@@ -5,6 +5,7 @@
 #include "HungryHeroHealthComponent.h"
 #include "HungryHeroKnifeAttackComponent.h"
 #include "HungryHeroMouseFacingComponent.h"
+#include "HungryHeroMobileInputOrientationComponent.h"
 #include "HungryHeroScoreComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -41,6 +42,7 @@ AHungryHeroPlayerCharacter::AHungryHeroPlayerCharacter()
 	HealthComponent = CreateDefaultSubobject<UHungryHeroHealthComponent>(TEXT("HealthComponent"));
 	ScoreComponent = CreateDefaultSubobject<UHungryHeroScoreComponent>(TEXT("ScoreComponent"));
 	MouseFacingComponent = CreateDefaultSubobject<UHungryHeroMouseFacingComponent>(TEXT("MouseFacingComponent"));
+	MobileInputOrientationComponent = CreateDefaultSubobject<UHungryHeroMobileInputOrientationComponent>(TEXT("MobileInputOrientationComponent"));
 }
 
 void AHungryHeroPlayerCharacter::Tick(float DeltaTime)
@@ -74,8 +76,16 @@ void AHungryHeroPlayerCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &AHungryHeroPlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AHungryHeroPlayerCharacter::MoveRight);
+
+#if PLATFORM_ANDROID
+	PlayerInputComponent->BindAxis(TEXT("MobileMoveForward"), this, &AHungryHeroPlayerCharacter::MoveForward);
+	PlayerInputComponent->BindAxis(TEXT("MobileMoveRight"), this, &AHungryHeroPlayerCharacter::MoveRight);
+	PlayerInputComponent->BindAxis(TEXT("MobileFaceForward"), this, &AHungryHeroPlayerCharacter::SetMobileFacingForward);
+	PlayerInputComponent->BindAxis(TEXT("MobileFaceRight"), this, &AHungryHeroPlayerCharacter::SetMobileFacingRight);
+#else
 	PlayerInputComponent->BindAxis(TEXT("MouseFaceForward"), this, &AHungryHeroPlayerCharacter::SetMouseFacingForward);
 	PlayerInputComponent->BindAxis(TEXT("MouseFaceRight"), this, &AHungryHeroPlayerCharacter::SetMouseFacingRight);
+#endif
 }
 
 void AHungryHeroPlayerCharacter::MoveForward(float Value)
@@ -134,7 +144,59 @@ void AHungryHeroPlayerCharacter::SetMouseFacingRight(float Value)
 	}
 }
 
+void AHungryHeroPlayerCharacter::SetMobileFacingForward(float Value)
+{
+	if (IsGameOver())
+	{
+		return;
+	}
+
+	MobileFacingForwardValue = Value;
+	ApplyMobileFacingInput();
+}
+
+void AHungryHeroPlayerCharacter::SetMobileFacingRight(float Value)
+{
+	if (IsGameOver())
+	{
+		return;
+	}
+
+	MobileFacingRightValue = Value;
+	ApplyMobileFacingInput();
+}
+
+void AHungryHeroPlayerCharacter::ApplyMobileFacingInput()
+{
+	if (IsGameOver())
+	{
+		return;
+	}
+
+	const FVector2D RawMobileInput(MobileFacingForwardValue, MobileFacingRightValue);
+	if (RawMobileInput.IsNearlyZero())
+	{
+		return;
+	}
+
+	if (MouseFacingComponent)
+	{
+		const FVector2D OrientedInput = GetOrientedMobileFacingDirection(RawMobileInput);
+		MouseFacingComponent->SetMouseFacingDirection(OrientedInput);
+	}
+}
+
 bool AHungryHeroPlayerCharacter::IsGameOver() const
 {
 	return HealthComponent && HealthComponent->IsGameOver();
+}
+
+FVector2D AHungryHeroPlayerCharacter::GetOrientedMobileFacingDirection(const FVector2D& InputDirection) const
+{
+	if (MobileInputOrientationComponent)
+	{
+		return MobileInputOrientationComponent->TransformInputDirection(InputDirection);
+	}
+
+	return InputDirection;
 }

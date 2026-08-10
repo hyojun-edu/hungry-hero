@@ -85,6 +85,17 @@ UHungryHeroKnifeAttackComponent* AHungryHeroHealthHud::FindPlayerKnifeAttackComp
 	return ControlledPawn->FindComponentByClass<UHungryHeroKnifeAttackComponent>();
 }
 
+float AHungryHeroHealthHud::GetHudScale() const
+{
+	if (!Canvas)
+	{
+		return 1.0f;
+	}
+
+	const float ShortSide = FMath::Min(static_cast<float>(Canvas->SizeX), static_cast<float>(Canvas->SizeY));
+	return FMath::Clamp(ShortSide / 720.0f, 0.9f, 1.4f);
+}
+
 void AHungryHeroHealthHud::DrawHealthBar(const UHungryHeroHealthComponent* HealthComponent)
 {
 	if (!Canvas || !HealthComponent)
@@ -92,10 +103,11 @@ void AHungryHeroHealthHud::DrawHealthBar(const UHungryHeroHealthComponent* Healt
 		return;
 	}
 
-	const float BarX = 48.0f;
-	const float BarY = 48.0f;
-	const float BarWidth = 320.0f;
-	const float BarHeight = 28.0f;
+	const float HudScale = GetHudScale();
+	const float BarX = 48.0f * HudScale;
+	const float BarY = 48.0f * HudScale;
+	const float BarWidth = 320.0f * HudScale;
+	const float BarHeight = 28.0f * HudScale;
 	const float HealthWidth = BarWidth * HealthComponent->GetHealthPercent();
 
 	DrawRect(FLinearColor(0.05f, 0.05f, 0.05f, 0.85f), BarX, BarY, BarWidth, BarHeight);
@@ -105,7 +117,7 @@ void AHungryHeroHealthHud::DrawHealthBar(const UHungryHeroHealthComponent* Healt
 		TEXT("Health %.0f / %.0f"),
 		HealthComponent->GetCurrentHealth(),
 		HealthComponent->GetMaxHealth());
-	DrawText(HealthText, FLinearColor::White, BarX, BarY + BarHeight + 8.0f, nullptr, 1.0f, false);
+	DrawText(HealthText, FLinearColor::White, BarX, BarY + BarHeight + (8.0f * HudScale), nullptr, HudScale, false);
 }
 
 void AHungryHeroHealthHud::DrawScoreText(const UHungryHeroScoreComponent* ScoreComponent)
@@ -115,8 +127,9 @@ void AHungryHeroHealthHud::DrawScoreText(const UHungryHeroScoreComponent* ScoreC
 		return;
 	}
 
+	const float HudScale = GetHudScale();
 	const FString ScoreText = FString::Printf(TEXT("Score %d"), ScoreComponent->GetCurrentScore());
-	DrawText(ScoreText, FLinearColor::Yellow, 48.0f, 116.0f, nullptr, 1.2f, false);
+	DrawText(ScoreText, FLinearColor::Yellow, 48.0f * HudScale, 116.0f * HudScale, nullptr, 1.2f * HudScale, false);
 }
 
 void AHungryHeroHealthHud::DrawAttackCooldown(const UHungryHeroKnifeAttackComponent* KnifeAttackComponent)
@@ -126,10 +139,11 @@ void AHungryHeroHealthHud::DrawAttackCooldown(const UHungryHeroKnifeAttackCompon
 		return;
 	}
 
-	const float BarX = 48.0f;
-	const float BarY = 156.0f;
-	const float BarWidth = 220.0f;
-	const float BarHeight = 18.0f;
+	const float HudScale = GetHudScale();
+	const float BarX = 48.0f * HudScale;
+	const float BarY = 156.0f * HudScale;
+	const float BarWidth = 220.0f * HudScale;
+	const float BarHeight = 18.0f * HudScale;
 	const float ReadyWidth = BarWidth * KnifeAttackComponent->GetAttackCooldownPercent();
 	const float CooldownRemaining = KnifeAttackComponent->GetAttackCooldownRemaining();
 
@@ -139,7 +153,7 @@ void AHungryHeroHealthHud::DrawAttackCooldown(const UHungryHeroKnifeAttackCompon
 	const FString CooldownText = CooldownRemaining > 0.0f
 		? FString::Printf(TEXT("Attack %.1fs"), CooldownRemaining)
 		: TEXT("Attack Ready");
-	DrawText(CooldownText, FLinearColor::White, BarX, BarY + BarHeight + 6.0f, nullptr, 1.0f, false);
+	DrawText(CooldownText, FLinearColor::White, BarX, BarY + BarHeight + (6.0f * HudScale), nullptr, HudScale, false);
 }
 
 void AHungryHeroHealthHud::DrawGameOverText()
@@ -149,9 +163,10 @@ void AHungryHeroHealthHud::DrawGameOverText()
 		return;
 	}
 
+	const float HudScale = GetHudScale();
 	const FString GameOverText = TEXT("GAME OVER");
-	const float TextX = (Canvas->SizeX * 0.5f) - 140.0f;
+	const float TextX = (Canvas->SizeX * 0.5f) - (140.0f * HudScale);
 	const float TextY = Canvas->SizeY * 0.45f;
 
-	DrawText(GameOverText, FLinearColor::Red, TextX, TextY, nullptr, 2.5f, false);
+	DrawText(GameOverText, FLinearColor::Red, TextX, TextY, nullptr, 2.5f * HudScale, false);
 }

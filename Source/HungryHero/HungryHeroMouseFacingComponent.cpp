@@ -33,6 +33,18 @@ void UHungryHeroMouseFacingComponent::SetMouseFacingRight(float Value)
 	bHasMouseFacingInputThisFrame = true;
 }
 
+void UHungryHeroMouseFacingComponent::SetMouseFacingDirection(const FVector2D& InputDirection)
+{
+	if (InputDirection.IsNearlyZero())
+	{
+		return;
+	}
+
+	MouseFacingForwardValue = InputDirection.X;
+	MouseFacingRightValue = InputDirection.Y;
+	bHasMouseFacingInputThisFrame = true;
+}
+
 void UHungryHeroMouseFacingComponent::UpdateFacing(float DeltaTime, bool bShouldStopFacing)
 {
 	EnsureGameInputMode();

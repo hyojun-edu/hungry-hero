@@ -29,6 +29,9 @@ private:
 	// 현재 플레이어의 칼 공격 컴포넌트를 찾는다.
 	UHungryHeroKnifeAttackComponent* FindPlayerKnifeAttackComponent() const;
 
+	// 모바일과 데스크톱 화면에서 HUD가 비슷한 비율로 보이도록 스케일 값을 계산한다.
+	float GetHudScale() const;
+
 	// 체력바 배경과 현재 체력 비율을 그린다.
 	void DrawHealthBar(const UHungryHeroHealthComponent* HealthComponent);
 

@@ -21,6 +21,9 @@ public:
 	// 마우스 좌우 이동 입력을 바라볼 방향 값으로 저장한다.
 	void SetMouseFacingRight(float Value);
 
+	// 이미 계산된 입력 방향을 한 번에 저장한다.
+	void SetMouseFacingDirection(const FVector2D& InputDirection);
+
 	// 마우스 이동 입력을 읽고 소유 액터의 정면 방향을 갱신한다.
 	void UpdateFacing(float DeltaTime, bool bShouldStopFacing);
 

@@ -9,3 +9,6 @@ Intermediate/ProjectFiles/
 __MACOSX
 .vs/
 .vsconfig
+Build/
+Android_ASTC/
+Mac/

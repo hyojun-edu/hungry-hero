@@ -9,6 +9,7 @@
 class UHungryHeroKnifeAttackComponent;
 class UHungryHeroHealthComponent;
 class UHungryHeroMouseFacingComponent;
+class UHungryHeroMobileInputOrientationComponent;
 class UHungryHeroScoreComponent;
 class UStaticMeshComponent;
 
@@ -43,6 +44,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player|Input")
 	TObjectPtr<UHungryHeroMouseFacingComponent> MouseFacingComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player|Input")
+	TObjectPtr<UHungryHeroMobileInputOrientationComponent> MobileInputOrientationComponent;
+
 private:
 	// 앞뒤 이동 입력을 이동 컴포넌트에 전달한다.
 	void MoveForward(float Value);
@@ -56,6 +60,22 @@ private:
 	// 마우스 좌우 이동 입력을 바라볼 방향 값으로 저장한다.
 	void SetMouseFacingRight(float Value);
 
+	// 모바일 오른쪽 스틱 위아래 입력을 바라볼 방향 값으로 저장한다.
+	void SetMobileFacingForward(float Value);
+
+	// 모바일 오른쪽 스틱 좌우 입력을 바라볼 방향 값으로 저장한다.
+	void SetMobileFacingRight(float Value);
+
+	// 모바일 오른쪽 스틱의 현재 두 축 값을 합쳐 바라볼 방향으로 전달한다.
+	void ApplyMobileFacingInput();
+
 	// 체력이 0이 되어 플레이 조작을 막아야 하는지 확인한다.
 	bool IsGameOver() const;
+
+	// 모바일 화면 방향 보정을 적용한 오른쪽 스틱 방향을 얻는다.
+	FVector2D GetOrientedMobileFacingDirection(const FVector2D& InputDirection) const;
+
+	float MobileFacingForwardValue = 0.0f;
+
+	float MobileFacingRightValue = 0.0f;
 };
